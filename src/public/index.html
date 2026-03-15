@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submarine — AI-Controlled Ocean Explorer</title>
+  <style>
+    :root {
+      --deep: #020b18;
+      --mid: #051a2e;
+      --surface: #0a2d4a;
+      --glow: #00d4ff;
+      --glow-dim: #0099bb;
+      --text: #c8e8f0;
+      --muted: #6a9ab0;
+      --accent: #00ffcc;
+      --warn: #ff6b35;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--deep);
+      color: var(--text);
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Animated ocean background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse at 20% 80%, rgba(0, 80, 120, 0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(0, 40, 80, 0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(0, 20, 50, 0.5) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      padding: 4rem 0 2rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+    }
+
+    .submarine-ascii {
+      font-size: 0.75rem;
+      color: var(--glow-dim);
+      line-height: 1.2;
+      margin-bottom: 2rem;
+      opacity: 0.7;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--glow);
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+      margin-bottom: 0.5rem;
+    }
+
+    .tagline {
+      color: var(--muted);
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+    }
+
+    .status-bar {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0, 212, 255, 0.08);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 2px;
+      padding: 0.4rem 1rem;
+      font-size: 0.8rem;
+      color: var(--accent);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Sections */
+    section {
+      padding: 3rem 0;
+      border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      color: var(--glow);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    h2::before {
+      content: '// ';
+      color: var(--muted);
+    }
+
+    p { color: var(--text); margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+
+    /* Mission grid */
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .mission-card {
+      background: rgba(0, 212, 255, 0.04);
+      border: 1px solid rgba(0, 212, 255, 0.12);
+      border-radius: 2px;
+      padding: 1.2rem;
+    }
+
+    .mission-card .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .mission-card h3 { font-size: 0.85rem; color: var(--glow); margin-bottom: 0.4rem; letter-spacing: 0.05em; }
+    .mission-card p { font-size: 0.8rem; color: var(--muted); margin: 0; }
+
+    /* Architecture diagram */
+    .arch-diagram {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 212, 255, 0.15);
+      border-radius: 2px;
+      padding: 2rem;
+      font-size: 0.75rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      margin-top: 1.5rem;
+    }
+
+    .arch-head {
+      text-align: center;
+      color: var(--accent);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+    }
+
+    .arch-arms {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+    }
+
+    .arm-box {
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      padding: 0.8rem;
+      text-align: center;
+      background: rgba(0, 40, 80, 0.4);
+    }
+
+    .arm-box.standby {
+      border-color: rgba(100, 100, 100, 0.3);
+      opacity: 0.6;
+    }
+
+    .arm-box .arm-name { color: var(--glow); font-size: 0.75rem; }
+    .arm-box .arm-role { color: var(--muted); font-size: 0.65rem; margin-top: 0.2rem; }
+    .arm-box .arm-status { font-size: 0.6rem; margin-top: 0.4rem; }
+    .arm-box .arm-status.active { color: var(--accent); }
+    .arm-box .arm-status.standby { color: var(--muted); }
+
+    .connector {
+      text-align: center;
+      color: var(--glow-dim);
+      margin: 0.5rem 0;
+      font-size: 0.7rem;
+    }
+
+    /* Milestones */
+    .milestones { list-style: none; margin-top: 1.5rem; }
+
+    .milestones li {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid rgba(0, 212, 255, 0.06);
+      font-size: 0.9rem;
+    }
+
+    .milestones li:last-child { border-bottom: none; }
+
+    .milestone-status {
+      flex-shrink: 0;
+      width: 1.2rem;
+      color: var(--muted);
+    }
+
+    .milestone-status.done { color: var(--accent); }
+
+    /* Stack */
+    .stack-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+    }
+
+    .stack-table th {
+      text-align: left;
+      padding: 0.6rem 1rem;
+      color: var(--glow);
+      border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+      font-weight: normal;
+      letter-spacing: 0.05em;
+    }
+
+    .stack-table td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid rgba(0, 212, 255, 0.06);
+      color: var(--text);
+    }
+
+    .stack-table td:first-child { color: var(--glow-dim); }
+
+    .badge {
+      display: inline-block;
+      padding: 0.1rem 0.5rem;
+      border-radius: 2px;
+      font-size: 0.7rem;
+      background: rgba(0, 255, 204, 0.1);
+      border: 1px solid rgba(0, 255, 204, 0.3);
+      color: var(--accent);
+    }
+
+    /* CTA */
+    .cta-section {
+      text-align: center;
+      padding: 4rem 0;
+    }
+
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; }
+
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      border: 1px solid var(--glow);
+      color: var(--glow);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      background: transparent;
+      margin: 0 0.5rem;
+    }
+
+    .btn:hover {
+      background: rgba(0, 212, 255, 0.1);
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+    }
+
+    .btn.primary {
+      background: rgba(0, 212, 255, 0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn.primary:hover {
+      background: rgba(0, 255, 204, 0.15);
+      box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+    }
+
+    /* Footer */
+    footer {
+      padding: 2rem 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+      border-top: 1px solid rgba(0, 212, 255, 0.08);
+    }
+
+    footer a { color: var(--glow-dim); text-decoration: none; }
+    footer a:hover { color: var(--glow); }
+
+    @media (max-width: 600px) {
+      .arch-arms { grid-template-columns: repeat(2, 1fr); }
+      .mission-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <pre class="submarine-ascii">
+          ___________________________
+         |  _________________________|
+         | |       SUBMARINE        |
+    ~~~~~|_|~~~~~~~~~~~~~~~~~~~~~~~~~|~~~~~
+              \_______________________/
+      </pre>
+      <h1>SUBMARINE</h1>
+      <p class="tagline">by 2036 i'll build a submarine.</p>
+      <div class="status-bar">
+        <span class="dot"></span>
+        PROTOTYPE IN DEVELOPMENT — v0.1
+      </div>
+    </header>
+
+    <section>
+      <h2>Mission</h2>
+      <p>
+        A vessel that can explore, transport, extract, search, guide, help, rescue, and clean.
+        Controlled by AI. Open source. Built to bridge gaps between continents and clean the oceans
+        before it is too late.
+      </p>
+      <div class="mission-grid">
+        <div class="mission-card">
+          <div class="icon">🌊</div>
+          <h3>Explore</h3>
+          <p>Map ocean floors, collect water samples, discover what's down there.</p>
+        </div>
+        <div class="mission-card">
+          <div class="icon">🗑️</div>
+          <h3>Clean</h3>
+          <p>Detect and extract floating debris. Autonomous trash collection at scale.</p>
+        </div>
+        <div class="mission-card">
+          <div class="icon">🚁</div>
+          <h3>Launch</h3>
+          <p>Deploy drones from below. Extend reach above and below the surface.</p>
+        </div>
+        <div class="mission-card">
+          <div class="icon">🧠</div>
+          <h3>Think</h3>
+          <p>AI agent swarm. Each arm is an autonomous agent. The head orchestrates.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Architecture</h2>
+      <p>
+        Each arm is an independent AI agent instance. The head orchestrates — decomposing tasks,
+        resolving conflicts, aggregating results. Arms share memory files on disk but maintain
+        isolated context windows. MCP for persistent bidirectional communication.
+      </p>
+
+      <div class="arch-diagram">
+        <div class="arch-head">
+          🧠 HEAD AGENT — Orchestrator<br/>
+          <span style="color: var(--muted); font-size: 0.7rem;">Task decomposition · Conflict resolution · State aggregation</span>
+        </div>
+        <div class="connector">↕ MCP (persistent bidirectional)</div>
+        <div class="arch-arms">
+          <div class="arm-box">
+            <div class="arm-name">🔭 ARM 1</div>
+            <div class="arm-role">Antenna Swap</div>
+            <div class="arm-status active">● ACTIVE</div>
+          </div>
+          <div class="arm-box">
+            <div class="arm-name">📡 ARM 2</div>
+            <div class="arm-role">Signal Reader</div>
+            <div class="arm-status active">● ACTIVE</div>
+          </div>
+          <div class="arm-box">
+            <div class="arm-name">⚡ ARM 3</div>
+            <div class="arm-role">Power Mgmt</div>
+            <div class="arm-status active">● ACTIVE</div>
+          </div>
+          <div class="arm-box">
+            <div class="arm-name">📊 ARM 4</div>
+            <div class="arm-role">Data Logger</div>
+            <div class="arm-status active">● ACTIVE</div>
+          </div>
+          <div class="arm-box standby">
+            <div class="arm-name">🔧 ARM 5</div>
+            <div class="arm-role">Calibration</div>
+            <div class="arm-status standby">○ STANDBY</div>
+          </div>
+          <div class="arm-box standby">
+            <div class="arm-name">📻 ARM 6</div>
+            <div class="arm-role">Comms Relay</div>
+            <div class="arm-status standby">○ STANDBY</div>
+          </div>
+        </div>
+        <div style="margin-top: 1.2rem; text-align: center; color: var(--muted); font-size: 0.65rem;">
+          Arms 5-6 in low-power standby · Wake on demand · Same energy budget
+        </div>
+      </div>
+
+      <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--muted);">
+        Full specification: <a href="https://github.com/dontriskit/submarine/blob/main/ARCHITECTURE.md" style="color: var(--glow-dim);">ARCHITECTURE.md</a>
+        · Issue <a href="https://github.com/dontriskit/submarine/issues/2" style="color: var(--glow-dim);">#2</a>
+      </p>
+    </section>
+
+    <section>
+      <h2>Milestones</h2>
+      <ul class="milestones">
+        <li>
+          <span class="milestone-status">○</span>
+          First submarine deployed
+        </li>
+        <li>
+          <span class="milestone-status">○</span>
+          First water sample collected
+        </li>
+        <li>
+          <span class="milestone-status">○</span>
+          First drone launched from autonomous submarine
+        </li>
+        <li>
+          <span class="milestone-status">○</span>
+          First submarine controlled by AI agent
+        </li>
+        <li>
+          <span class="milestone-status">○</span>
+          First submarine to discover floating debris / trash
+        </li>
+        <li>
+          <span class="milestone-status">○</span>
+          First submarine to extract something solid and return to dock
+        </li>
+        <li>
+          <span class="milestone-status">○</span>
+          First mind-controlled submarine
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Stack</h2>
+      <table class="stack-table">
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Technology</th>
+            <th>License</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Web server</td>
+            <td>Hono — ultrafast edge framework</td>
+            <td><span class="badge">MIT</span></td>
+          </tr>
+          <tr>
+            <td>Agent framework</td>
+            <td>OpenClaw</td>
+            <td><span class="badge">MIT</span></td>
+          </tr>
+          <tr>
+            <td>Agent protocol</td>
+            <td>MCP (Model Context Protocol)</td>
+            <td><span class="badge">MIT</span></td>
+          </tr>
+          <tr>
+            <td>Runtime</td>
+            <td>Node 20 Alpine</td>
+            <td><span class="badge">MIT</span></td>
+          </tr>
+          <tr>
+            <td>Container</td>
+            <td>Docker · linux/arm64</td>
+            <td><span class="badge">Apache 2.0</span></td>
+          </tr>
+          <tr>
+            <td>Hardware target</td>
+            <td>ARM CPU (Raspberry Pi, Mac M-series, AWS Graviton)</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="cta-section">
+      <p>Open source. MIT licensed. Come build the future of ocean autonomy.</p>
+      <a href="https://github.com/dontriskit/submarine" class="btn primary">⭐ GitHub</a>
+      <a href="https://github.com/dontriskit/submarine/issues" class="btn">🐛 Issues</a>
+      <a href="https://github.com/dontriskit/submarine/blob/main/ARCHITECTURE.md" class="btn">📐 Architecture</a>
+    </div>
+
+    <footer>
+      <p>
+        Built by <a href="https://github.com/dontriskit">@dontriskit</a> ·
+        Architecture by <a href="https://github.com/jaredtribe">@jaredtribe</a> (OS-1 agent) ·
+        <a href="https://github.com/dontriskit/submarine/blob/main/LICENSE">MIT License</a>
+      </p>
+    </footer>
+
+  </div>
+</body>
+</html>
