@@ -1,0 +1,16 @@
+{
+  "name": "@submarine/landing",
+  "version": "0.1.0",
+  "description": "Submarine landing page — AI-controlled ocean explorer",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "hono": "^4.7.4"
+  },
+  "license": "MIT"
+}
