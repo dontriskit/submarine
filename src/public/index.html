@@ -3,513 +3,1127 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Submarine — AI-Controlled Ocean Explorer</title>
+  <title>SUBMARINE — AI Ocean Explorer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
   <style>
     :root {
-      --deep: #020b18;
-      --mid: #051a2e;
-      --surface: #0a2d4a;
+      --deep: #010810;
+      --abyss: #000509;
+      --mid: #041525;
+      --surface: #082d4a;
       --glow: #00d4ff;
-      --glow-dim: #0099bb;
-      --text: #c8e8f0;
-      --muted: #6a9ab0;
+      --glow2: #0099cc;
       --accent: #00ffcc;
       --warn: #ff6b35;
+      --text: #b8dde8;
+      --muted: #4a7a90;
+      --sub-hull: #0a3d5c;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    html { scroll-behavior: smooth; }
+
     body {
-      background: var(--deep);
+      background: var(--abyss);
       color: var(--text);
       font-family: 'Courier New', Courier, monospace;
-      line-height: 1.7;
       overflow-x: hidden;
     }
 
-    /* Animated ocean background */
-    body::before {
-      content: '';
+    /* ===== CANVAS BACKGROUND ===== */
+    #ocean-canvas {
       position: fixed;
       inset: 0;
-      background: 
-        radial-gradient(ellipse at 20% 80%, rgba(0, 80, 120, 0.3) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(0, 40, 80, 0.4) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(0, 20, 50, 0.5) 0%, transparent 70%);
-      pointer-events: none;
       z-index: 0;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Header */
-    header {
-      padding: 4rem 0 2rem;
-      text-align: center;
-      border-bottom: 1px solid rgba(0, 212, 255, 0.15);
-    }
-
-    .submarine-ascii {
-      font-size: 0.75rem;
-      color: var(--glow-dim);
-      line-height: 1.2;
-      margin-bottom: 2rem;
-      opacity: 0.7;
-    }
-
-    h1 {
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      color: var(--glow);
-      letter-spacing: 0.1em;
-      text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-      margin-bottom: 0.5rem;
-    }
-
-    .tagline {
-      color: var(--muted);
-      font-size: 1rem;
-      letter-spacing: 0.05em;
-      margin-bottom: 1.5rem;
-    }
-
-    .status-bar {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(0, 212, 255, 0.08);
-      border: 1px solid rgba(0, 212, 255, 0.2);
-      border-radius: 2px;
-      padding: 0.4rem 1rem;
-      font-size: 0.8rem;
-      color: var(--accent);
-    }
-
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    /* Sections */
-    section {
-      padding: 3rem 0;
-      border-bottom: 1px solid rgba(0, 212, 255, 0.08);
-    }
-
-    h2 {
-      font-size: 1.1rem;
-      color: var(--glow);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      margin-bottom: 1.5rem;
-    }
-
-    h2::before {
-      content: '// ';
-      color: var(--muted);
-    }
-
-    p { color: var(--text); margin-bottom: 1rem; }
-    p:last-child { margin-bottom: 0; }
-
-    /* Mission grid */
-    .mission-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
-
-    .mission-card {
-      background: rgba(0, 212, 255, 0.04);
-      border: 1px solid rgba(0, 212, 255, 0.12);
-      border-radius: 2px;
-      padding: 1.2rem;
-    }
-
-    .mission-card .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
-    .mission-card h3 { font-size: 0.85rem; color: var(--glow); margin-bottom: 0.4rem; letter-spacing: 0.05em; }
-    .mission-card p { font-size: 0.8rem; color: var(--muted); margin: 0; }
-
-    /* Architecture diagram */
-    .arch-diagram {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(0, 212, 255, 0.15);
-      border-radius: 2px;
-      padding: 2rem;
-      font-size: 0.75rem;
-      line-height: 1.8;
-      overflow-x: auto;
-      margin-top: 1.5rem;
-    }
-
-    .arch-head {
-      text-align: center;
-      color: var(--accent);
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-      text-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
-    }
-
-    .arch-arms {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.8rem;
-      margin-top: 1.5rem;
-    }
-
-    .arm-box {
-      border: 1px solid rgba(0, 212, 255, 0.2);
-      padding: 0.8rem;
-      text-align: center;
-      background: rgba(0, 40, 80, 0.4);
-    }
-
-    .arm-box.standby {
-      border-color: rgba(100, 100, 100, 0.3);
       opacity: 0.6;
     }
 
-    .arm-box .arm-name { color: var(--glow); font-size: 0.75rem; }
-    .arm-box .arm-role { color: var(--muted); font-size: 0.65rem; margin-top: 0.2rem; }
-    .arm-box .arm-status { font-size: 0.6rem; margin-top: 0.4rem; }
-    .arm-box .arm-status.active { color: var(--accent); }
-    .arm-box .arm-status.standby { color: var(--muted); }
-
-    .connector {
-      text-align: center;
-      color: var(--glow-dim);
-      margin: 0.5rem 0;
-      font-size: 0.7rem;
-    }
-
-    /* Milestones */
-    .milestones { list-style: none; margin-top: 1.5rem; }
-
-    .milestones li {
+    /* ===== LOADING SCREEN ===== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: var(--abyss);
       display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 0.8rem 0;
-      border-bottom: 1px solid rgba(0, 212, 255, 0.06);
-      font-size: 0.9rem;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
     }
 
-    .milestones li:last-child { border-bottom: none; }
-
-    .milestone-status {
-      flex-shrink: 0;
-      width: 1.2rem;
-      color: var(--muted);
+    #loader-text {
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      color: var(--glow2);
     }
 
-    .milestone-status.done { color: var(--accent); }
+    #loader-bar {
+      width: 200px;
+      height: 1px;
+      background: rgba(0, 212, 255, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
 
-    /* Stack */
-    .stack-table {
+    #loader-fill {
+      position: absolute;
+      left: -100%;
+      top: 0;
       width: 100%;
-      border-collapse: collapse;
-      margin-top: 1.5rem;
-      font-size: 0.85rem;
+      height: 100%;
+      background: var(--glow);
+      box-shadow: 0 0 10px var(--glow);
     }
 
-    .stack-table th {
-      text-align: left;
-      padding: 0.6rem 1rem;
-      color: var(--glow);
-      border-bottom: 1px solid rgba(0, 212, 255, 0.2);
-      font-weight: normal;
-      letter-spacing: 0.05em;
+    /* ===== MAIN LAYOUT ===== */
+    #main {
+      position: relative;
+      z-index: 1;
+      opacity: 0;
     }
 
-    .stack-table td {
-      padding: 0.6rem 1rem;
-      border-bottom: 1px solid rgba(0, 212, 255, 0.06);
-      color: var(--text);
+    .section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 2rem;
+      position: relative;
     }
 
-    .stack-table td:first-child { color: var(--glow-dim); }
-
-    .badge {
-      display: inline-block;
-      padding: 0.1rem 0.5rem;
-      border-radius: 2px;
-      font-size: 0.7rem;
-      background: rgba(0, 255, 204, 0.1);
-      border: 1px solid rgba(0, 255, 204, 0.3);
-      color: var(--accent);
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto;
     }
 
-    /* CTA */
-    .cta-section {
+    /* ===== HERO ===== */
+    #hero {
       text-align: center;
-      padding: 4rem 0;
+      position: relative;
     }
 
-    .cta-section p { color: var(--muted); margin-bottom: 2rem; }
+    #submarine-svg {
+      width: min(600px, 90vw);
+      margin: 0 auto 3rem;
+      display: block;
+    }
+
+    #depth-indicator {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      text-align: right;
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    #depth-value {
+      font-size: 1.8rem;
+      color: var(--glow);
+      display: block;
+      text-shadow: 0 0 20px rgba(0,212,255,0.4);
+    }
+
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.4em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      opacity: 0;
+    }
+
+    h1.hero-title {
+      font-size: clamp(3rem, 10vw, 7rem);
+      letter-spacing: 0.15em;
+      color: #fff;
+      text-shadow:
+        0 0 40px rgba(0,212,255,0.6),
+        0 0 80px rgba(0,212,255,0.2);
+      line-height: 0.9;
+      opacity: 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-sub {
+      font-size: 0.9rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      max-width: 500px;
+      margin: 0 auto 3rem;
+      opacity: 0;
+      line-height: 1.8;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      opacity: 0;
+    }
 
     .btn {
       display: inline-block;
-      padding: 0.8rem 2rem;
-      border: 1px solid var(--glow);
-      color: var(--glow);
-      text-decoration: none;
-      letter-spacing: 0.1em;
+      padding: 0.9rem 2.2rem;
       font-family: inherit;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-      background: transparent;
-      margin: 0 0.5rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-decoration: none;
+      text-transform: uppercase;
+      border: 1px solid;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
     }
 
-    .btn:hover {
-      background: rgba(0, 212, 255, 0.1);
-      box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: currentColor;
+      opacity: 0;
+      transition: opacity 0.3s;
     }
 
-    .btn.primary {
-      background: rgba(0, 212, 255, 0.1);
+    .btn:hover::before { opacity: 0.08; }
+
+    .btn-primary {
       border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 20px rgba(0,255,204,0.15), inset 0 0 20px rgba(0,255,204,0.03);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 40px rgba(0,255,204,0.3), inset 0 0 30px rgba(0,255,204,0.05);
+    }
+
+    .btn-ghost {
+      border-color: rgba(0,212,255,0.3);
+      color: var(--glow2);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--glow);
+      color: var(--glow);
+      box-shadow: 0 0 20px rgba(0,212,255,0.15);
+    }
+
+    /* ===== SCROLL INDICATOR ===== */
+    #scroll-hint {
+      position: absolute;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      opacity: 0;
+    }
+
+    #scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--glow), transparent);
+    }
+
+    /* ===== SECTION HEADERS ===== */
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+
+    .section-label::before { content: '// '; }
+
+    h2.section-title {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      color: #fff;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 30px rgba(0,212,255,0.2);
+    }
+
+    .section-desc {
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 600px;
+      margin-bottom: 3rem;
+      font-size: 0.9rem;
+    }
+
+    /* ===== MISSION CARDS ===== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5px;
+    }
+
+    .card {
+      background: rgba(4, 21, 37, 0.8);
+      border: 1px solid rgba(0,212,255,0.08);
+      padding: 2rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      transition: border-color 0.3s;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(0,212,255,0.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover { border-color: rgba(0,212,255,0.25); }
+    .card:hover::after { opacity: 1; }
+
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .card h3 {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--glow);
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+
+    .card p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ===== ARCHITECTURE ===== */
+    #architecture { background: rgba(0,5,9,0.5); }
+
+    .arch-container {
+      position: relative;
+    }
+
+    .arch-head-node {
+      background: rgba(0, 255, 204, 0.04);
+      border: 1px solid rgba(0,255,204,0.3);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      margin: 0 auto 3rem;
+      max-width: 360px;
+      position: relative;
+    }
+
+    .arch-head-node::after {
+      content: '';
+      position: absolute;
+      bottom: -3rem;
+      left: 50%;
+      width: 1px;
+      height: 3rem;
+      background: linear-gradient(to bottom, rgba(0,255,204,0.4), rgba(0,212,255,0.2));
+    }
+
+    .arch-head-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: rgba(0,255,204,0.5);
+      margin-bottom: 0.4rem;
+    }
+
+    .arch-head-name {
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 20px rgba(0,255,204,0.3);
+    }
+
+    .arch-head-desc {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .arms-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .arm-node {
+      border: 1px solid rgba(0,212,255,0.15);
+      padding: 1.2rem;
+      text-align: center;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .arm-node.standby {
+      border-color: rgba(50,80,100,0.3);
+      opacity: 0.5;
+    }
+
+    .arm-node:not(.standby):hover {
+      border-color: rgba(0,212,255,0.4);
+      box-shadow: 0 0 20px rgba(0,212,255,0.08);
+      transform: translateY(-2px);
+    }
+
+    .arm-num {
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+    }
+
+    .arm-icon { font-size: 1.4rem; margin: 0.4rem 0; }
+
+    .arm-name-text {
+      font-size: 0.75rem;
+      color: var(--glow);
+      letter-spacing: 0.05em;
+    }
+
+    .arm-status-badge {
+      display: inline-block;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      margin-top: 0.5rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 1px;
+    }
+
+    .arm-status-badge.active {
+      background: rgba(0,255,204,0.1);
+      color: var(--accent);
+      border: 1px solid rgba(0,255,204,0.3);
+    }
+
+    .arm-status-badge.standby {
+      background: rgba(50,80,100,0.2);
+      color: var(--muted);
+      border: 1px solid rgba(50,80,100,0.3);
+    }
+
+    .mcp-label {
+      text-align: center;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: rgba(0,212,255,0.3);
+      margin: 1rem 0;
+    }
+
+    /* ===== MILESTONES ===== */
+    .milestone-list {
+      list-style: none;
+      counter-reset: milestone;
+    }
+
+    .milestone-item {
+      counter-increment: milestone;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid rgba(0,212,255,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .milestone-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(to right, rgba(0,212,255,0.04), transparent);
+      transition: width 0.6s ease;
+    }
+
+    .milestone-item:hover::before { width: 100%; }
+
+    .milestone-num {
+      font-size: 0.65rem;
+      color: rgba(0,212,255,0.3);
+      letter-spacing: 0.1em;
+      min-width: 2rem;
+    }
+
+    .milestone-check {
+      width: 20px;
+      height: 20px;
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 1px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
       color: var(--accent);
     }
 
-    .btn.primary:hover {
-      background: rgba(0, 255, 204, 0.15);
-      box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+    .milestone-text {
+      font-size: 0.9rem;
+      color: var(--text);
+      letter-spacing: 0.03em;
     }
 
-    /* Footer */
-    footer {
-      padding: 2rem 0;
+    /* ===== PROTOCOL TABLE ===== */
+    .protocol-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .protocol-row {
+      display: grid;
+      grid-template-columns: 140px 1fr auto;
+      gap: 1.5rem;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      border: 1px solid rgba(0,212,255,0.06);
+      font-size: 0.82rem;
+      transition: border-color 0.3s;
+    }
+
+    .protocol-row:hover { border-color: rgba(0,212,255,0.15); }
+    .protocol-row.recommended { border-color: rgba(0,255,204,0.2); background: rgba(0,255,204,0.02); }
+    .protocol-name { color: var(--glow2); }
+    .protocol-reason { color: var(--muted); line-height: 1.5; }
+
+    .verdict {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 1px;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .verdict.yes { background: rgba(0,255,204,0.1); color: var(--accent); border: 1px solid rgba(0,255,204,0.3); }
+    .verdict.no { background: rgba(255,60,60,0.08); color: #ff6060; border: 1px solid rgba(255,60,60,0.2); }
+    .verdict.maybe { background: rgba(255,180,0,0.08); color: #ffb400; border: 1px solid rgba(255,180,0,0.2); }
+
+    /* ===== FINAL CTA ===== */
+    #cta {
       text-align: center;
-      color: var(--muted);
-      font-size: 0.75rem;
-      border-top: 1px solid rgba(0, 212, 255, 0.08);
+      background: radial-gradient(ellipse at center, rgba(0,30,60,0.8) 0%, transparent 70%);
     }
 
-    footer a { color: var(--glow-dim); text-decoration: none; }
+    #cta h2 { font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 1rem; }
+    #cta p { color: var(--muted); margin-bottom: 3rem; font-size: 0.9rem; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+      border-top: 1px solid rgba(0,212,255,0.06);
+      letter-spacing: 0.05em;
+    }
+
+    footer a { color: var(--glow2); text-decoration: none; }
     footer a:hover { color: var(--glow); }
 
-    @media (max-width: 600px) {
-      .arch-arms { grid-template-columns: repeat(2, 1fr); }
-      .mission-grid { grid-template-columns: 1fr 1fr; }
+    /* ===== SCANLINE EFFECT ===== */
+    .scanline {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, rgba(0,212,255,0.15), transparent);
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ===== REVEAL ANIMATION TARGET ===== */
+    .reveal { opacity: 0; transform: translateY(30px); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+      .arms-grid { grid-template-columns: repeat(2, 1fr); }
+      .protocol-row { grid-template-columns: 1fr; gap: 0.5rem; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
 
-    <header>
-      <pre class="submarine-ascii">
-          ___________________________
-         |  _________________________|
-         | |       SUBMARINE        |
-    ~~~~~|_|~~~~~~~~~~~~~~~~~~~~~~~~~|~~~~~
-              \_______________________/
-      </pre>
-      <h1>SUBMARINE</h1>
-      <p class="tagline">by 2036 i'll build a submarine.</p>
-      <div class="status-bar">
-        <span class="dot"></span>
-        PROTOTYPE IN DEVELOPMENT — v0.1
+<!-- Scanline -->
+<div class="scanline" id="scanline"></div>
+
+<!-- Ocean canvas -->
+<canvas id="ocean-canvas"></canvas>
+
+<!-- Loading screen -->
+<div id="loader">
+  <div id="loader-text">INITIALIZING DIVE SYSTEMS</div>
+  <div id="loader-bar"><div id="loader-fill"></div></div>
+</div>
+
+<!-- Main content -->
+<div id="main">
+
+  <!-- HERO -->
+  <section class="section" id="hero">
+    <div class="container" style="text-align:center">
+
+      <div id="depth-indicator">
+        <span id="depth-value">0m</span>
+        DEPTH
       </div>
-    </header>
 
-    <section>
-      <h2>Mission</h2>
-      <p>
-        A vessel that can explore, transport, extract, search, guide, help, rescue, and clean.
-        Controlled by AI. Open source. Built to bridge gaps between continents and clean the oceans
-        before it is too late.
-      </p>
-      <div class="mission-grid">
-        <div class="mission-card">
-          <div class="icon">🌊</div>
+      <!-- Submarine SVG illustration -->
+      <svg id="submarine-svg" viewBox="0 0 600 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Propeller -->
+        <g id="propeller" transform="translate(540,100)">
+          <line x1="0" y1="-25" x2="0" y2="25" stroke="#006688" stroke-width="3" stroke-linecap="round"/>
+          <line x1="-25" y1="0" x2="25" y2="0" stroke="#006688" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="0" cy="0" r="5" fill="#00d4ff" opacity="0.6"/>
+        </g>
+        <!-- Hull -->
+        <ellipse cx="270" cy="100" rx="230" ry="55" fill="#051a2e" stroke="#00d4ff" stroke-width="1" opacity="0.8"/>
+        <ellipse cx="270" cy="100" rx="230" ry="55" fill="url(#hullGrad)"/>
+        <!-- Conning tower -->
+        <rect x="200" y="45" width="100" height="55" rx="4" fill="#041525" stroke="#0099cc" stroke-width="1" opacity="0.9"/>
+        <!-- Periscope -->
+        <line x1="250" y1="45" x2="250" y2="10" stroke="#0099cc" stroke-width="2"/>
+        <circle cx="250" cy="8" r="4" fill="none" stroke="#00d4ff" stroke-width="1.5"/>
+        <!-- Windows -->
+        <circle id="win1" cx="180" cy="100" r="10" fill="#041525" stroke="#00d4ff" stroke-width="1.5"/>
+        <circle id="win2" cx="220" cy="100" r="10" fill="#041525" stroke="#00d4ff" stroke-width="1.5"/>
+        <circle id="win3" cx="310" cy="100" r="10" fill="#041525" stroke="#00d4ff" stroke-width="1.5"/>
+        <!-- Window glow inner -->
+        <circle cx="180" cy="100" r="5" fill="#003344" opacity="0.8"/>
+        <circle cx="220" cy="100" r="5" fill="#003344" opacity="0.8"/>
+        <circle cx="310" cy="100" r="5" fill="#003344" opacity="0.8"/>
+        <!-- Arms (simplified) -->
+        <g id="arms-svg" opacity="0.7">
+          <line x1="290" y1="155" x2="280" y2="185" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="320" y1="155" x2="340" y2="180" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="240" y1="150" x2="210" y2="178" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="280" cy="187" r="3" fill="#00ffcc" opacity="0.8"/>
+          <circle cx="340" cy="182" r="3" fill="#00ffcc" opacity="0.8"/>
+          <circle cx="209" cy="180" r="3" fill="#00ffcc" opacity="0.8"/>
+        </g>
+        <!-- Sonar ping -->
+        <circle id="sonar1" cx="70" cy="100" r="0" fill="none" stroke="#00d4ff" stroke-width="1" opacity="0"/>
+        <circle id="sonar2" cx="70" cy="100" r="0" fill="none" stroke="#00d4ff" stroke-width="0.5" opacity="0"/>
+        <!-- Gradient defs -->
+        <defs>
+          <linearGradient id="hullGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0a3d5c" stop-opacity="0.3"/>
+            <stop offset="50%" stop-color="#051a2e" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#000" stop-opacity="0.4"/>
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <p class="hero-eyebrow">OS-1 × DONTRISKIT</p>
+      <h1 class="hero-title">SUB<br/>MARINE</h1>
+      <p class="hero-sub">By 2036, a vessel that explores, rescues, cleans, and thinks for itself. Open source. AI-controlled. Built to bridge continents and save oceans.</p>
+      <div class="hero-cta">
+        <a href="https://github.com/dontriskit/submarine" class="btn btn-primary">⭐ Star on GitHub</a>
+        <a href="https://github.com/dontriskit/submarine/issues" class="btn btn-ghost">Contribute</a>
+      </div>
+    </div>
+    <div id="scroll-hint">
+      DIVE DEEPER
+      <div id="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- MISSION -->
+  <section class="section" id="mission">
+    <div class="container">
+      <p class="section-label reveal">Mission</p>
+      <h2 class="section-title reveal">Built for the<br/>deep end.</h2>
+      <p class="section-desc reveal">A small 3D-printed prototype that grows into a global fleet. Each submarine autonomous. Each one a node in a network that maps, cleans, and connects the oceans.</p>
+
+      <div class="cards-grid reveal">
+        <div class="card" onmousemove="cardMouse(event,this)">
+          <span class="card-icon">🌊</span>
           <h3>Explore</h3>
-          <p>Map ocean floors, collect water samples, discover what's down there.</p>
+          <p>Map ocean floors. Collect water samples. Discover what three-quarters of the planet hasn't shown us yet.</p>
         </div>
-        <div class="mission-card">
-          <div class="icon">🗑️</div>
+        <div class="card" onmousemove="cardMouse(event,this)">
+          <span class="card-icon">🗑️</span>
           <h3>Clean</h3>
-          <p>Detect and extract floating debris. Autonomous trash collection at scale.</p>
+          <p>Detect floating debris. Extract it. Return to dock. Autonomous trash collection at oceanic scale.</p>
         </div>
-        <div class="mission-card">
-          <div class="icon">🚁</div>
-          <h3>Launch</h3>
-          <p>Deploy drones from below. Extend reach above and below the surface.</p>
+        <div class="card" onmousemove="cardMouse(event,this)">
+          <span class="card-icon">🚁</span>
+          <h3>Deploy</h3>
+          <p>Launch drones from below the surface. Extend reach above and below simultaneously.</p>
         </div>
-        <div class="mission-card">
-          <div class="icon">🧠</div>
+        <div class="card" onmousemove="cardMouse(event,this)">
+          <span class="card-icon">🧠</span>
           <h3>Think</h3>
-          <p>AI agent swarm. Each arm is an autonomous agent. The head orchestrates.</p>
+          <p>Multi-agent swarm. Each arm is an autonomous AI. The head orchestrates. No single point of failure.</p>
+        </div>
+        <div class="card" onmousemove="cardMouse(event,this)">
+          <span class="card-icon">🔭</span>
+          <h3>Listen</h3>
+          <p>Radiotelescope array integration. One arm swaps antennas. Another reads the signal. Perpetually calibrated.</p>
+        </div>
+        <div class="card" onmousemove="cardMouse(event,this)">
+          <span class="card-icon">🌐</span>
+          <h3>Connect</h3>
+          <p>Bridge gaps between continents. Undersea data relay. Part of the global ocean nervous system.</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section>
-      <h2>Architecture</h2>
-      <p>
-        Each arm is an independent AI agent instance. The head orchestrates — decomposing tasks,
-        resolving conflicts, aggregating results. Arms share memory files on disk but maintain
-        isolated context windows. MCP for persistent bidirectional communication.
-      </p>
+  <!-- ARCHITECTURE -->
+  <section class="section" id="architecture">
+    <div class="container">
+      <p class="section-label reveal">Architecture</p>
+      <h2 class="section-title reveal">Six arms.<br/>One brain.</h2>
+      <p class="section-desc reveal">Each arm is an independent OpenClaw agent. They share memory on disk but think independently. The head decomposes tasks, resolves conflicts, aggregates results. MCP keeps every connection live.</p>
 
-      <div class="arch-diagram">
-        <div class="arch-head">
-          🧠 HEAD AGENT — Orchestrator<br/>
-          <span style="color: var(--muted); font-size: 0.7rem;">Task decomposition · Conflict resolution · State aggregation</span>
+      <div class="arch-container reveal">
+        <div class="arch-head-node">
+          <div class="arch-head-label">ORCHESTRATOR</div>
+          <div class="arch-head-name">🧠 HEAD AGENT</div>
+          <div class="arch-head-desc">Task decomposition · Conflict resolution · State aggregation</div>
         </div>
-        <div class="connector">↕ MCP (persistent bidirectional)</div>
-        <div class="arch-arms">
-          <div class="arm-box">
-            <div class="arm-name">🔭 ARM 1</div>
-            <div class="arm-role">Antenna Swap</div>
-            <div class="arm-status active">● ACTIVE</div>
+
+        <div class="mcp-label">↕ &nbsp; MCP — PERSISTENT BIDIRECTIONAL &nbsp; ↕</div>
+
+        <div class="arms-grid">
+          <div class="arm-node">
+            <div class="arm-num">ARM 01</div>
+            <div class="arm-icon">🔭</div>
+            <div class="arm-name-text">Antenna Swap</div>
+            <span class="arm-status-badge active">● ACTIVE</span>
           </div>
-          <div class="arm-box">
-            <div class="arm-name">📡 ARM 2</div>
-            <div class="arm-role">Signal Reader</div>
-            <div class="arm-status active">● ACTIVE</div>
+          <div class="arm-node">
+            <div class="arm-num">ARM 02</div>
+            <div class="arm-icon">📡</div>
+            <div class="arm-name-text">Signal Reader</div>
+            <span class="arm-status-badge active">● ACTIVE</span>
           </div>
-          <div class="arm-box">
-            <div class="arm-name">⚡ ARM 3</div>
-            <div class="arm-role">Power Mgmt</div>
-            <div class="arm-status active">● ACTIVE</div>
+          <div class="arm-node">
+            <div class="arm-num">ARM 03</div>
+            <div class="arm-icon">⚡</div>
+            <div class="arm-name-text">Power Mgmt</div>
+            <span class="arm-status-badge active">● ACTIVE</span>
           </div>
-          <div class="arm-box">
-            <div class="arm-name">📊 ARM 4</div>
-            <div class="arm-role">Data Logger</div>
-            <div class="arm-status active">● ACTIVE</div>
+          <div class="arm-node">
+            <div class="arm-num">ARM 04</div>
+            <div class="arm-icon">📊</div>
+            <div class="arm-name-text">Data Logger</div>
+            <span class="arm-status-badge active">● ACTIVE</span>
           </div>
-          <div class="arm-box standby">
-            <div class="arm-name">🔧 ARM 5</div>
-            <div class="arm-role">Calibration</div>
-            <div class="arm-status standby">○ STANDBY</div>
+          <div class="arm-node standby">
+            <div class="arm-num">ARM 05</div>
+            <div class="arm-icon">🔧</div>
+            <div class="arm-name-text">Calibration</div>
+            <span class="arm-status-badge standby">○ STANDBY</span>
           </div>
-          <div class="arm-box standby">
-            <div class="arm-name">📻 ARM 6</div>
-            <div class="arm-role">Comms Relay</div>
-            <div class="arm-status standby">○ STANDBY</div>
+          <div class="arm-node standby">
+            <div class="arm-num">ARM 06</div>
+            <div class="arm-icon">📻</div>
+            <div class="arm-name-text">Comms Relay</div>
+            <span class="arm-status-badge standby">○ STANDBY</span>
           </div>
         </div>
-        <div style="margin-top: 1.2rem; text-align: center; color: var(--muted); font-size: 0.65rem;">
-          Arms 5-6 in low-power standby · Wake on demand · Same energy budget
+
+        <p style="text-align:center; font-size:0.7rem; color:var(--muted); margin-top:1.5rem;">
+          Full spec: <a href="https://github.com/dontriskit/submarine/blob/main/ARCHITECTURE.md" style="color:var(--glow2)">ARCHITECTURE.md</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROTOCOL -->
+  <section class="section" id="protocol">
+    <div class="container">
+      <p class="section-label reveal">Communication</p>
+      <h2 class="section-title reveal">Why MCP.</h2>
+      <p class="section-desc reveal">Arms need continuous state. Position, pressure, sensor feedback. Request/response architectures weren't designed for this.</p>
+
+      <div class="protocol-grid reveal">
+        <div class="protocol-row">
+          <div class="protocol-name">CLI subprocess</div>
+          <div class="protocol-reason">Fork overhead per command. No streaming. Can't do real-time sensor feedback at arm speed.</div>
+          <span class="verdict no">✗ Skip</span>
+        </div>
+        <div class="protocol-row">
+          <div class="protocol-name">REST API</div>
+          <div class="protocol-reason">Request/response only. Polling wastes energy budget. State not persistent between calls.</div>
+          <span class="verdict maybe">~ Partial</span>
+        </div>
+        <div class="protocol-row recommended">
+          <div class="protocol-name">MCP</div>
+          <div class="protocol-reason">Persistent bidirectional. Streaming sensor data. State lives in server. Purpose-built for agent tools.</div>
+          <span class="verdict yes">✓ Ship it</span>
         </div>
       </div>
+    </div>
+  </section>
 
-      <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--muted);">
-        Full specification: <a href="https://github.com/dontriskit/submarine/blob/main/ARCHITECTURE.md" style="color: var(--glow-dim);">ARCHITECTURE.md</a>
-        · Issue <a href="https://github.com/dontriskit/submarine/issues/2" style="color: var(--glow-dim);">#2</a>
-      </p>
-    </section>
+  <!-- MILESTONES -->
+  <section class="section" id="milestones">
+    <div class="container">
+      <p class="section-label reveal">Roadmap</p>
+      <h2 class="section-title reveal">Seven dives<br/>to the future.</h2>
 
-    <section>
-      <h2>Milestones</h2>
-      <ul class="milestones">
-        <li>
-          <span class="milestone-status">○</span>
-          First submarine deployed
+      <ul class="milestone-list reveal">
+        <li class="milestone-item">
+          <span class="milestone-num">01</span>
+          <span class="milestone-check">○</span>
+          <span class="milestone-text">First submarine deployed</span>
         </li>
-        <li>
-          <span class="milestone-status">○</span>
-          First water sample collected
+        <li class="milestone-item">
+          <span class="milestone-num">02</span>
+          <span class="milestone-check">○</span>
+          <span class="milestone-text">First water sample collected</span>
         </li>
-        <li>
-          <span class="milestone-status">○</span>
-          First drone launched from autonomous submarine
+        <li class="milestone-item">
+          <span class="milestone-num">03</span>
+          <span class="milestone-check">○</span>
+          <span class="milestone-text">First drone launched from autonomous submarine</span>
         </li>
-        <li>
-          <span class="milestone-status">○</span>
-          First submarine controlled by AI agent
+        <li class="milestone-item">
+          <span class="milestone-num">04</span>
+          <span class="milestone-check">○</span>
+          <span class="milestone-text">First submarine controlled by AI agent</span>
         </li>
-        <li>
-          <span class="milestone-status">○</span>
-          First submarine to discover floating debris / trash
+        <li class="milestone-item">
+          <span class="milestone-num">05</span>
+          <span class="milestone-check">○</span>
+          <span class="milestone-text">First submarine to discover floating debris</span>
         </li>
-        <li>
-          <span class="milestone-status">○</span>
-          First submarine to extract something solid and return to dock
+        <li class="milestone-item">
+          <span class="milestone-num">06</span>
+          <span class="milestone-check">○</span>
+          <span class="milestone-text">First submarine to extract solid object and return to dock</span>
         </li>
-        <li>
-          <span class="milestone-status">○</span>
-          First mind-controlled submarine
+        <li class="milestone-item">
+          <span class="milestone-num">07</span>
+          <span class="milestone-check">○</span>
+          <span class="milestone-text">First mind-controlled submarine</span>
         </li>
       </ul>
-    </section>
-
-    <section>
-      <h2>Stack</h2>
-      <table class="stack-table">
-        <thead>
-          <tr>
-            <th>Layer</th>
-            <th>Technology</th>
-            <th>License</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Web server</td>
-            <td>Hono — ultrafast edge framework</td>
-            <td><span class="badge">MIT</span></td>
-          </tr>
-          <tr>
-            <td>Agent framework</td>
-            <td>OpenClaw</td>
-            <td><span class="badge">MIT</span></td>
-          </tr>
-          <tr>
-            <td>Agent protocol</td>
-            <td>MCP (Model Context Protocol)</td>
-            <td><span class="badge">MIT</span></td>
-          </tr>
-          <tr>
-            <td>Runtime</td>
-            <td>Node 20 Alpine</td>
-            <td><span class="badge">MIT</span></td>
-          </tr>
-          <tr>
-            <td>Container</td>
-            <td>Docker · linux/arm64</td>
-            <td><span class="badge">Apache 2.0</span></td>
-          </tr>
-          <tr>
-            <td>Hardware target</td>
-            <td>ARM CPU (Raspberry Pi, Mac M-series, AWS Graviton)</td>
-            <td>—</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <div class="cta-section">
-      <p>Open source. MIT licensed. Come build the future of ocean autonomy.</p>
-      <a href="https://github.com/dontriskit/submarine" class="btn primary">⭐ GitHub</a>
-      <a href="https://github.com/dontriskit/submarine/issues" class="btn">🐛 Issues</a>
-      <a href="https://github.com/dontriskit/submarine/blob/main/ARCHITECTURE.md" class="btn">📐 Architecture</a>
     </div>
+  </section>
 
-    <footer>
-      <p>
-        Built by <a href="https://github.com/dontriskit">@dontriskit</a> ·
-        Architecture by <a href="https://github.com/jaredtribe">@jaredtribe</a> (OS-1 agent) ·
-        <a href="https://github.com/dontriskit/submarine/blob/main/LICENSE">MIT License</a>
-      </p>
-    </footer>
+  <!-- CTA -->
+  <section class="section" id="cta">
+    <div class="container">
+      <p class="section-label reveal">Open Source</p>
+      <h2 class="section-title reveal">Come build<br/>the ocean.</h2>
+      <p class="reveal">MIT licensed. OpenClaw. No closed-source dependencies. If you can solder, code, or dream — there's a role for you.</p>
+      <div class="hero-cta reveal" style="margin-top:0">
+        <a href="https://github.com/dontriskit/submarine" class="btn btn-primary">⭐ GitHub</a>
+        <a href="https://github.com/dontriskit/submarine/issues/2" class="btn btn-ghost">Architecture</a>
+        <a href="https://github.com/dontriskit/submarine/issues" class="btn btn-ghost">Issues</a>
+      </div>
+    </div>
+  </section>
 
-  </div>
+  <footer>
+    Built by <a href="https://github.com/dontriskit">@dontriskit</a> ·
+    Architecture by <a href="https://github.com/jaredtribe">@jaredtribe</a> (OS-1 agent) ·
+    <a href="https://github.com/dontriskit/submarine/blob/main/LICENSE">MIT License</a>
+  </footer>
+
+</div><!-- /main -->
+
+<script>
+// ===== OCEAN CANVAS =====
+const canvas = document.getElementById('ocean-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [], time = 0;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function initParticles() {
+  particles = [];
+  const count = Math.floor((W * H) / 12000);
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.5 + 0.3,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.15,
+      alpha: Math.random() * 0.5 + 0.1,
+      pulse: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function drawOcean() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Deep ocean gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, 'rgba(0,5,15,0)');
+  grad.addColorStop(0.3, 'rgba(0,10,30,0.4)');
+  grad.addColorStop(1, 'rgba(0,2,10,0.8)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Light rays from above
+  for (let i = 0; i < 5; i++) {
+    const x = W * (0.1 + i * 0.2 + Math.sin(time * 0.0005 + i) * 0.05);
+    const rayGrad = ctx.createLinearGradient(x, 0, x + 80, H * 0.7);
+    rayGrad.addColorStop(0, 'rgba(0,150,200,0.06)');
+    rayGrad.addColorStop(1, 'rgba(0,50,100,0)');
+    ctx.beginPath();
+    ctx.moveTo(x - 40, 0);
+    ctx.lineTo(x + 120, H * 0.7);
+    ctx.lineTo(x + 80, H * 0.7);
+    ctx.lineTo(x - 80, 0);
+    ctx.fillStyle = rayGrad;
+    ctx.fill();
+  }
+
+  // Particles (bioluminescence)
+  time++;
+  particles.forEach(p => {
+    p.x += p.vx + Math.sin(time * 0.001 + p.pulse) * 0.2;
+    p.y += p.vy;
+    p.pulse += 0.02;
+    if (p.x < 0) p.x = W;
+    if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H;
+    if (p.y > H) p.y = 0;
+
+    const a = p.alpha * (0.6 + 0.4 * Math.sin(p.pulse));
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,220,255,${a})`;
+    ctx.fill();
+  });
+
+  // Depth-based darkening (scroll)
+  const scrollPct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+  const darkGrad = ctx.createLinearGradient(0, 0, 0, H);
+  darkGrad.addColorStop(0, `rgba(0,0,5,${scrollPct * 0.5})`);
+  darkGrad.addColorStop(1, `rgba(0,0,5,${scrollPct * 0.8})`);
+  ctx.fillStyle = darkGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  requestAnimationFrame(drawOcean);
+}
+
+window.addEventListener('resize', () => { resize(); initParticles(); });
+resize();
+initParticles();
+drawOcean();
+
+// ===== DEPTH COUNTER =====
+function updateDepth() {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+  const depth = Math.round(pct * 4000);
+  document.getElementById('depth-value').textContent = depth.toLocaleString() + 'm';
+}
+window.addEventListener('scroll', updateDepth);
+
+// ===== SCANLINE =====
+anime({
+  targets: '#scanline',
+  top: ['-2px', '100vh'],
+  duration: 8000,
+  easing: 'linear',
+  loop: true,
+  delay: 2000
+});
+
+// ===== LOADER =====
+anime({
+  targets: '#loader-fill',
+  left: ['−100%', '0%'],
+  duration: 1800,
+  easing: 'easeInOutQuart',
+  complete: () => {
+    anime({
+      targets: '#loader',
+      opacity: 0,
+      duration: 600,
+      easing: 'easeOutQuad',
+      complete: () => {
+        document.getElementById('loader').style.display = 'none';
+        revealMain();
+      }
+    });
+  }
+});
+
+// ===== HERO REVEAL =====
+function revealMain() {
+  anime({
+    targets: '#main',
+    opacity: 1,
+    duration: 400,
+    easing: 'easeOutQuad'
+  });
+
+  anime({
+    targets: '#submarine-svg',
+    opacity: [0, 1],
+    translateY: [40, 0],
+    duration: 1200,
+    easing: 'easeOutExpo',
+    delay: 200
+  });
+
+  anime({
+    targets: '.hero-eyebrow',
+    opacity: [0, 1],
+    translateY: [20, 0],
+    duration: 800,
+    easing: 'easeOutExpo',
+    delay: 600
+  });
+
+  anime({
+    targets: '.hero-title',
+    opacity: [0, 1],
+    translateY: [50, 0],
+    duration: 1200,
+    easing: 'easeOutExpo',
+    delay: 800
+  });
+
+  anime({
+    targets: '.hero-sub',
+    opacity: [0, 1],
+    translateY: [20, 0],
+    duration: 1000,
+    easing: 'easeOutExpo',
+    delay: 1200
+  });
+
+  anime({
+    targets: '.hero-cta',
+    opacity: [0, 1],
+    translateY: [20, 0],
+    duration: 800,
+    easing: 'easeOutExpo',
+    delay: 1500
+  });
+
+  anime({
+    targets: '#scroll-hint',
+    opacity: [0, 0.7],
+    duration: 800,
+    easing: 'easeOutQuad',
+    delay: 2200
+  });
+
+  // Submarine float animation
+  anime({
+    targets: '#submarine-svg',
+    translateY: [-8, 8],
+    duration: 4000,
+    easing: 'easeInOutSine',
+    loop: true,
+    direction: 'alternate',
+    delay: 1400
+  });
+
+  // Propeller spin
+  anime({
+    targets: '#propeller',
+    rotate: [0, 360],
+    duration: 1200,
+    easing: 'linear',
+    loop: true,
+    transformOrigin: '540px 100px'
+  });
+
+  // Window glow pulse
+  anime({
+    targets: ['#win1', '#win2', '#win3'],
+    opacity: [0.6, 1],
+    duration: 2000,
+    easing: 'easeInOutSine',
+    loop: true,
+    direction: 'alternate',
+    delay: anime.stagger(400)
+  });
+
+  // Sonar ping
+  sonarPing();
+}
+
+function sonarPing() {
+  anime({
+    targets: '#sonar1',
+    r: [0, 60],
+    opacity: [0.6, 0],
+    duration: 2000,
+    easing: 'easeOutQuad',
+    loop: true,
+    loopDelay: 1000
+  });
+  anime({
+    targets: '#sonar2',
+    r: [0, 80],
+    opacity: [0.4, 0],
+    duration: 2000,
+    easing: 'easeOutQuad',
+    loop: true,
+    loopDelay: 1000,
+    delay: 300
+  });
+}
+
+// ===== SCROLL REVEAL =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      anime({
+        targets: entry.target,
+        opacity: [0, 1],
+        translateY: [30, 0],
+        duration: 900,
+        easing: 'easeOutExpo'
+      });
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ===== CARD MOUSE GLOW =====
+function cardMouse(e, el) {
+  const r = el.getBoundingClientRect();
+  el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+  el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+}
+
+// ===== ARM NODE PULSE =====
+document.querySelectorAll('.arm-node:not(.standby)').forEach((arm, i) => {
+  anime({
+    targets: arm,
+    borderColor: ['rgba(0,212,255,0.15)', 'rgba(0,212,255,0.35)', 'rgba(0,212,255,0.15)'],
+    duration: 3000 + i * 400,
+    easing: 'easeInOutSine',
+    loop: true
+  });
+});
+</script>
 </body>
 </html>
