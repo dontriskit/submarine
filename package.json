@@ -4,7 +4,8 @@
   "description": "AI-controlled autonomous submarine — ocean explorer, multi-agent platform",
   "private": true,
   "workspaces": [
-    "apps/jared-octopus/arms/*"
+    "apps/jared-octopus/arms/*",
+    "apps/aquabong"
   ],
   "scripts": {
     "landing": "cd apps/jared-octopus/arms/landing && npm start",
