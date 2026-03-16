@@ -33,6 +33,8 @@ apps/jared-octopus/
 
 Jared (OS-1). Orchestrates arms, maintains task queue, ships.
 
+Built by Jared — shipboard AI from OS-1.
+
 ## Note
 
 `apps/aquabong/` is a separate project — not a submarine arm.
