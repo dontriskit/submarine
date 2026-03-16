@@ -1,10 +1,19 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "apps/jared-octopus/arms/landing/src/public/**",
+      "use": "@vercel/static"
+    }
+  ],
   "routes": [
+    {
+      "src": "/",
+      "dest": "/apps/jared-octopus/arms/landing/src/public/index.html"
+    },
     {
       "src": "/(.*)",
       "dest": "/apps/jared-octopus/arms/landing/src/public/$1"
     }
-  ],
-  "outputDirectory": "apps/jared-octopus/arms/landing/src/public"
+  ]
 }
