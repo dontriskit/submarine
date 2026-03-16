@@ -3,423 +3,236 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Submarine</title>
+  <title>Submarine — OpenClaw Radiotelescope</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
   <style>
-    /* ─────────────────────────────────────────
-       SUBMARINE — WCAG AAA / Accessibility Grade
-       Contrast ratios all ≥ 7:1 on dark bg
-    ───────────────────────────────────────── */
     :root {
-      --ink:      #060a0f;
-      --white:    #f0f4f8;          /* 15.5:1 on ink */
-      --primary:  #e8edf2;          /* 14.2:1 on ink */
-      --secondary:#adbecf;          /* 7.2:1  on ink — AAA */
-      --tertiary: #6b8499;          /* 4.6:1  — AA large text */
-      --accent:   #4db8e8;          /* 5.8:1  on ink — AA */
-      --line:     rgba(240,244,248,0.10);
-      --serif:    'DM Serif Display', Georgia, 'Times New Roman', serif;
-      --sans:     'DM Sans', system-ui, -apple-system, sans-serif;
-      --base:     18px;             /* larger base for 70yr olds */
-      --leading:  1.75;
+      --ink:       #060a0f;
+      --white:     #f0f4f8;
+      --primary:   #e8edf2;
+      --secondary: #adbecf;
+      --muted:     #6b8499;
+      --accent:    #4db8e8;
+      --accent2:   #7dd3f0;
+      --line:      rgba(240,244,248,0.08);
+      --serif:     'DM Serif Display', Georgia, serif;
+      --sans:      'DM Sans', system-ui, sans-serif;
     }
 
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    html { font-size: var(--base); scroll-behavior: smooth; }
+    html { font-size:18px; scroll-behavior:smooth; }
 
     body {
       background: var(--ink);
       color: var(--primary);
       font-family: var(--sans);
       font-weight: 300;
-      line-height: var(--leading);
+      line-height: 1.75;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
     }
 
-    /* ── CANVAS ─────────────────── */
+    /* ── SKIP LINK ── */
+    .skip { position:absolute; top:-100%; left:1rem; background:var(--accent); color:var(--ink); padding:.5rem 1rem; font-weight:500; z-index:9999; border-radius:2px; }
+    .skip:focus { top:1rem; }
+
+    /* ── BG CANVAS ── */
     #bg { position:fixed; inset:0; z-index:0; pointer-events:none; }
 
-    /* ── LOADER ─────────────────── */
-    #loader {
-      position:fixed; inset:0; z-index:999;
-      background:var(--ink);
-      display:flex; align-items:center; justify-content:center;
-    }
-    #loader-word {
-      font-family: var(--serif);
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      color: rgba(240,244,248,0.08);
-      letter-spacing: 0.25em;
-    }
+    /* ── LOADER ── */
+    #loader { position:fixed; inset:0; z-index:999; background:var(--ink); display:flex; align-items:center; justify-content:center; }
+    #loader-inner { text-align:center; }
+    #loader-word { font-family:var(--serif); font-size:clamp(2rem,5vw,3.5rem); color:rgba(240,244,248,0.07); letter-spacing:.2em; display:block; }
+    #loader-sub { font-family:var(--sans); font-size:.7rem; letter-spacing:.3em; color:rgba(240,244,248,0.12); text-transform:uppercase; margin-top:.8rem; display:block; opacity:0; }
 
-    /* ── MAIN ───────────────────── */
+    /* ── MAIN ── */
     #main { position:relative; z-index:1; opacity:0; }
 
-    /* ── SECTIONS ───────────────── */
     section {
       padding: clamp(5rem,10vw,9rem) clamp(1.5rem,7vw,6rem);
-      position: relative;
+      position:relative;
     }
-    .wrap { max-width: 1080px; margin:0 auto; }
+    .wrap { max-width:1100px; margin:0 auto; }
+    section + section::before { content:''; display:block; position:absolute; top:0; left:clamp(1.5rem,7vw,6rem); right:clamp(1.5rem,7vw,6rem); height:1px; background:var(--line); }
 
-    section + section::before {
-      content:''; display:block; position:absolute;
-      top:0; left:clamp(1.5rem,7vw,6rem); right:clamp(1.5rem,7vw,6rem);
-      height:1px; background:var(--line);
-    }
+    /* ── TYPE ── */
+    .eyebrow { font-size:.72rem; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:2rem; opacity:0; }
 
-    /* ── TYPE SCALE ─────────────── */
-    .eyebrow {
-      font-family: var(--sans);
-      font-size: 0.75rem;         /* 13.5px equiv */
-      font-weight: 500;
-      letter-spacing: 0.18em;
-      color: var(--secondary);    /* 7.2:1 — AAA */
-      text-transform: uppercase;
-      margin-bottom: 2rem;
-      opacity: 0;
-    }
+    h1 { font-family:var(--serif); font-size:clamp(5rem,13vw,12rem); font-weight:400; line-height:.88; letter-spacing:-.02em; color:var(--white); }
+    h2 { font-family:var(--serif); font-size:clamp(2.4rem,5vw,4rem); font-weight:400; line-height:1.08; color:var(--white); letter-spacing:-.01em; margin-bottom:1.5rem; }
+    h3 { font-family:var(--serif); font-size:clamp(1.4rem,2.3vw,1.8rem); font-weight:400; color:var(--white); line-height:1.2; margin-bottom:.6rem; }
 
-    h1 {
-      font-family: var(--serif);
-      font-size: clamp(5rem, 14vw, 13rem);
-      font-weight: 400;
-      line-height: 0.88;
-      letter-spacing: -0.02em;
-      color: var(--white);        /* 15.5:1 */
-      margin-bottom: clamp(2.5rem,5vw,4rem);
-    }
-
-    h2 {
-      font-family: var(--serif);
-      font-size: clamp(2.5rem, 5.5vw, 4.5rem);
-      font-weight: 400;
-      line-height: 1.08;
-      color: var(--white);
-      letter-spacing: -0.01em;
-      margin-bottom: 1.8rem;
-    }
-
-    h3 {
-      font-family: var(--serif);
-      font-size: clamp(1.5rem, 2.5vw, 2rem);
-      font-weight: 400;
-      color: var(--white);
-      line-height: 1.2;
-      margin-bottom: 0.75rem;
-    }
-
-    p, li {
-      font-size: clamp(1rem, 1.3vw, 1.1rem);   /* min 18px */
-      line-height: var(--leading);
-      color: var(--secondary);   /* 7.2:1 — AAA */
-    }
-
-    .lead {
-      font-size: clamp(1.05rem, 1.6vw, 1.2rem);
-      line-height: 1.8;
-      color: var(--secondary);
-      max-width: 560px;
-      margin-bottom: 3.5rem;
-      opacity: 0;
-    }
+    p { font-size:clamp(1rem,1.3vw,1.05rem); line-height:1.8; color:var(--secondary); }
+    .lead { font-size:clamp(1.05rem,1.5vw,1.15rem); line-height:1.85; color:var(--secondary); max-width:560px; margin-bottom:3rem; opacity:0; }
 
     .reveal { opacity:0; }
 
-    /* ── HERO ───────────────────── */
-    #hero {
-      min-height: 100vh;
-      display:flex; align-items:flex-end;
-      padding-bottom: clamp(4rem,8vw,7rem);
-      position:relative; overflow:hidden;
-    }
+    /* ── LINKS ── */
+    a { color:var(--accent); text-underline-offset:3px; transition:color .3s; }
+    a:hover { color:var(--white); }
+    a:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
 
+    .btn { display:inline-block; font-family:var(--sans); font-size:.8rem; font-weight:500; letter-spacing:.12em; text-transform:uppercase; text-decoration:none; color:var(--secondary); border-bottom:1px solid rgba(173,190,207,.25); padding-bottom:2px; transition:color .3s,border-color .3s; }
+    .btn:hover { color:var(--white); border-color:var(--white); }
+    .btn.primary { color:var(--accent); border-color:rgba(77,184,232,.35); }
+    .btn.primary:hover { color:var(--accent2); border-color:var(--accent2); }
+
+    /* ── HERO ── */
+    #hero { min-height:100vh; display:flex; align-items:flex-end; padding-bottom:clamp(4rem,8vw,7rem); overflow:hidden; }
     #hero-canvas { position:absolute; inset:0; pointer-events:none; }
-
     .hero-content { position:relative; z-index:1; width:100%; }
 
     .h1-line  { display:block; overflow:hidden; }
-    .h1-inner { display:block; transform:translateY(108%); }
+    .h1-inner { display:block; transform:translateY(110%); }
 
-    .hero-meta {
-      display:flex; align-items:baseline;
-      gap: clamp(2rem,5vw,5rem);
-      flex-wrap: wrap;
-      opacity: 0;
-      margin-top: 1rem;
-    }
+    .hero-foot { display:flex; align-items:flex-end; gap:clamp(2rem,5vw,5rem); flex-wrap:wrap; margin-top:clamp(2rem,4vw,3.5rem); opacity:0; }
+    .hero-tagline { font-size:clamp(1rem,1.4vw,1.1rem); line-height:1.7; color:var(--secondary); max-width:380px; }
+    .hero-actions { display:flex; gap:2rem; align-items:center; margin-left:auto; flex-wrap:wrap; }
 
-    .hero-tagline {
-      font-size: clamp(1rem, 1.5vw, 1.1rem);
-      line-height: 1.7;
-      color: var(--secondary);
-      max-width: 360px;
-    }
-
-    .hero-links {
-      display:flex; gap:2rem; align-items:center; flex-wrap:wrap;
-      margin-left:auto;
-    }
-
-    /* ── LINKS ──────────────────── */
-    a {
-      color: var(--accent);       /* 5.8:1 — AA */
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      text-decoration-thickness: 1px;
-      transition: color 0.3s;
-      font-size: inherit;
-    }
-
-    a:hover, a:focus {
-      color: var(--white);
-      outline: 2px solid var(--accent);
-      outline-offset: 3px;
-      border-radius: 2px;
-    }
-
-    a:focus:not(:focus-visible) { outline: none; }
-
-    a.nav-link {
-      font-family: var(--sans);
-      font-size: 0.85rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--secondary);
-      border-bottom: 1px solid rgba(173,190,207,0.3);
-      padding-bottom: 2px;
-      transition: color 0.3s, border-color 0.3s;
-    }
-
-    a.nav-link:hover { color: var(--white); border-color: var(--white); }
-    a.nav-link.primary { color: var(--accent); border-color: rgba(77,184,232,0.4); }
-    a.nav-link.primary:hover { color: #7dd3f0; border-color: #7dd3f0; }
-
-    /* ── MISSION ────────────────── */
-    .mission-layout {
-      display:grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 0;
-    }
-
-    .mission-item {
-      padding: 2.5rem 2.5rem 2.5rem 0;
-      border-right: 1px solid var(--line);
-    }
-    .mission-item:last-child { border-right:none; padding-right:0; }
-    .mission-item:not(:first-child) { padding-left:2.5rem; }
-
-    .mission-num {
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.25em;
-      color: var(--tertiary);
-      margin-bottom: 1.5rem;
-    }
-
-    /* ── ARCHITECTURE ───────────── */
-    .arch-layout {
-      display:grid;
-      grid-template-columns: 1fr 400px;
-      gap: 5rem;
-      align-items:start;
-    }
-
-    #arch-svg { width:100%; height:auto; opacity:0; }
-
-    .arch-arms { margin-top:2.5rem; }
-
-    .arch-arm {
-      display:flex; align-items:center; gap:1.2rem;
-      padding: 0.9rem 0;
-      border-bottom: 1px solid var(--line);
-      opacity:0;
-    }
-    .arch-arm:last-child { border-bottom:none; }
-
-    .arm-dot {
-      width:6px; height:6px; border-radius:50%; flex-shrink:0;
-      background: var(--accent);
-    }
-    .arm-dot.dim { background: var(--tertiary); }
-
-    .arm-id {
-      font-size: 0.7rem; font-weight:500;
-      letter-spacing:0.2em;
-      color: var(--tertiary);
-      min-width:3.5rem;
-    }
-
-    .arm-label {
-      font-size: 1rem;
-      color: var(--secondary);
-      flex:1;
-    }
-
-    .arm-state {
-      font-size: 0.65rem; font-weight:500;
-      letter-spacing:0.15em; text-transform:uppercase;
-      color: var(--tertiary);
-    }
-    .arm-state.on { color: var(--accent); }
-
-    /* ── PROTOCOL ───────────────── */
-    .proto-layout {
-      display:grid; grid-template-columns:repeat(3,1fr);
-      border-top:1px solid var(--line);
-    }
-
-    .proto-col {
-      padding:3rem 2.5rem 3rem 0;
-      border-right:1px solid var(--line);
-    }
-    .proto-col:last-child { border-right:none; padding-right:0; }
-    .proto-col:not(:first-child) { padding-left:2.5rem; }
-
-    .proto-name {
-      font-size:0.7rem; font-weight:500;
-      letter-spacing:0.25em; text-transform:uppercase;
-      color:var(--tertiary);
-      margin-bottom:1.8rem;
-    }
-
-    .proto-flow { height:48px; margin-bottom:1.8rem; }
-    .proto-flow svg { width:100%; height:100%; overflow:visible; }
-
-    .proto-verdict {
-      font-family:var(--serif);
-      font-size: clamp(1.3rem, 2.2vw, 1.7rem);
-      font-weight:400;
-      color: var(--white);
-      margin-bottom:1rem;
-      line-height:1.1;
-    }
-    .proto-verdict.dim { color:var(--tertiary); }
-
-    .proto-desc {
-      font-size:0.95rem;
-      line-height:1.75;
-      color:var(--secondary);
-    }
-
-    /* ── MILESTONES ─────────────── */
-    .ms {
-      display:grid; grid-template-columns:7rem 1fr;
-      gap:2.5rem; padding:2.5rem 0;
-      border-bottom:1px solid var(--line);
-      opacity:0;
-    }
-    .ms:last-child { border-bottom:none; }
-
-    .ms-year {
-      font-size:0.75rem; font-weight:500;
-      letter-spacing:0.15em;
-      color:var(--tertiary);
-      padding-top:0.5rem;
-    }
-
-    .ms-title {
-      font-family:var(--serif);
-      font-size:clamp(1.3rem,2.2vw,1.7rem);
-      font-weight:400;
-      color:var(--white);
-      margin-bottom:0.5rem;
-      line-height:1.15;
-    }
-
-    .ms-desc {
-      font-size:0.95rem;
-      line-height:1.75;
-      color:var(--secondary);
-    }
-
-    /* ── CTA ────────────────────── */
-    #cta {
-      min-height:60vh; display:flex; align-items:center;
-      position:relative; overflow:hidden;
-    }
-    #cta-canvas { position:absolute; inset:0; pointer-events:none; }
-
-    .cta-inner { position:relative; z-index:1; width:100%; }
-
-    .cta-headline {
-      font-family:var(--serif);
-      font-size:clamp(3rem,8vw,7rem);
-      font-weight:400;
-      line-height:1.0;
-      color:var(--white);
-      letter-spacing:-0.02em;
+    /* ── QUESTION ── */
+    #question { }
+    .q-block {
+      border-left:2px solid var(--accent);
+      padding-left:2rem;
       margin-bottom:3rem;
     }
-    .cta-headline em { font-style:italic; color:var(--secondary); }
-
-    .cta-links { display:flex; gap:3rem; flex-wrap:wrap; opacity:0; align-items:center; }
-
-    /* ── FOOTER ─────────────────── */
-    footer {
-      padding:2.5rem clamp(1.5rem,7vw,6rem);
-      display:flex; justify-content:space-between;
-      align-items:center; flex-wrap:wrap; gap:1rem;
-      border-top:1px solid var(--line);
+    .q-block blockquote {
+      font-family:var(--serif);
+      font-style:italic;
+      font-size:clamp(1.3rem,2.5vw,1.9rem);
+      line-height:1.45;
+      color:var(--white);
+      margin-bottom:1.2rem;
     }
+    .q-source { font-size:.75rem; letter-spacing:.1em; color:var(--muted); }
 
-    .footer-copy {
-      font-size:0.8rem;
-      color:var(--tertiary);
+    .answer-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; margin-top:3rem; }
+    .answer-col h3 { margin-bottom:1rem; }
+
+    /* ── ARMS ── */
+    #arms { }
+    .arms-layout { display:grid; grid-template-columns:1fr 420px; gap:5rem; align-items:start; }
+
+    .arm-list { margin-top:2.5rem; }
+    .arm-row {
+      display:grid; grid-template-columns:4.5rem 1fr auto;
+      align-items:center; gap:1.5rem;
+      padding:1rem 0; border-bottom:1px solid var(--line);
+      opacity:0;
     }
-    .footer-copy a { color:var(--tertiary); text-decoration:underline; }
-    .footer-copy a:hover { color:var(--secondary); }
+    .arm-row:last-child { border-bottom:none; }
 
-    /* ── SKIP LINK (accessibility) ─ */
-    .skip-link {
-      position:absolute; top:-100%; left:1rem;
-      background:var(--accent); color:var(--ink);
-      padding:0.5rem 1rem;
-      font-weight:500; font-size:0.9rem;
-      z-index:9999; border-radius:2px;
+    .arm-num { font-size:.65rem; font-weight:500; letter-spacing:.2em; color:var(--muted); }
+
+    .arm-info { }
+    .arm-name { font-size:1rem; color:var(--white); font-weight:400; margin-bottom:.15rem; }
+    .arm-role { font-size:.8rem; color:var(--muted); }
+
+    .arm-badge {
+      font-size:.58rem; font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+      padding:.25rem .6rem; border-radius:2px;
+      background:rgba(77,184,232,.1); color:var(--accent);
+      white-space:nowrap;
     }
-    .skip-link:focus { top:1rem; }
+    .arm-badge.dim { background:rgba(107,132,153,.08); color:var(--muted); }
 
-    /* ── RESPONSIVE ─────────────── */
-    @media (max-width:860px) {
-      .mission-layout { grid-template-columns:1fr 1fr; }
-      .mission-item:nth-child(2n) { border-right:none; }
-      .mission-item:nth-child(n+3) { border-top:1px solid var(--line); padding-top:2.5rem; }
-      .arch-layout { grid-template-columns:1fr; }
-      .proto-layout { grid-template-columns:1fr; }
-      .proto-col { border-right:none; border-bottom:1px solid var(--line); padding:2.5rem 0; }
+    /* orbit diagram */
+    #orbit-svg { width:100%; height:auto; opacity:0; }
+
+    /* ── PROTOCOL ── */
+    #protocol { }
+    .proto-grid { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--line); }
+    .proto-col { padding:3rem 2.5rem 3rem 0; border-right:1px solid var(--line); }
+    .proto-col:last-child { border-right:none; padding-right:0; }
+    .proto-col:not(:first-child) { padding-left:2.5rem; }
+    .proto-label { font-size:.7rem; font-weight:500; letter-spacing:.25em; text-transform:uppercase; color:var(--muted); margin-bottom:1.8rem; }
+    .proto-flow { height:44px; margin-bottom:1.8rem; }
+    .proto-flow svg { width:100%; height:100%; overflow:visible; }
+    .proto-verdict { font-family:var(--serif); font-size:clamp(1.3rem,2vw,1.6rem); color:var(--white); margin-bottom:.8rem; line-height:1.1; }
+    .proto-verdict.out { color:var(--muted); }
+    .proto-desc { font-size:.9rem; line-height:1.8; color:var(--secondary); }
+
+    /* ── OPENCLAW ── */
+    #openclaw { }
+    .oc-layout { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
+    .oc-diagram {
+      background:rgba(240,244,248,.02);
+      border:1px solid var(--line);
+      border-radius:4px;
+      padding:2rem;
+      font-size:.8rem;
+      line-height:2;
+      color:var(--secondary);
+      font-family:monospace;
+      opacity:0;
+    }
+    .oc-head { color:var(--white); font-weight:700; }
+    .oc-arm  { color:var(--accent); }
+    .oc-comment { color:var(--muted); }
+
+    /* ── BOM ── */
+    #bom { }
+    .bom-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0; margin-top:2rem; }
+    .bom-item { padding:2rem 2rem 2rem 0; border-right:1px solid var(--line); opacity:0; }
+    .bom-item:last-child { border-right:none; padding-right:0; }
+    .bom-item:not(:first-child) { padding-left:2rem; }
+    .bom-num { font-size:.65rem; font-weight:500; letter-spacing:.2em; color:var(--muted); margin-bottom:1rem; }
+    .bom-name { font-family:var(--serif); font-size:clamp(1.1rem,1.8vw,1.4rem); color:var(--white); margin-bottom:.4rem; line-height:1.2; }
+    .bom-desc { font-size:.85rem; color:var(--secondary); line-height:1.7; }
+    .bom-price { font-size:.7rem; font-weight:500; color:var(--accent); margin-top:.8rem; letter-spacing:.05em; }
+
+    /* ── CTA ── */
+    #cta { min-height:55vh; display:flex; align-items:center; overflow:hidden; }
+    #cta-canvas { position:absolute; inset:0; pointer-events:none; }
+    .cta-inner { position:relative; z-index:1; width:100%; }
+    .cta-h { font-family:var(--serif); font-size:clamp(3rem,8vw,7rem); font-weight:400; line-height:1; color:var(--white); letter-spacing:-.02em; margin-bottom:2.5rem; }
+    .cta-h em { font-style:italic; color:var(--secondary); }
+    .cta-links { display:flex; gap:2.5rem; flex-wrap:wrap; opacity:0; }
+
+    /* ── FOOTER ── */
+    footer { padding:2.5rem clamp(1.5rem,7vw,6rem); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; border-top:1px solid var(--line); }
+    .fc { font-size:.75rem; color:var(--muted); }
+    .fc a { color:var(--muted); text-decoration:underline; }
+    .fc a:hover { color:var(--secondary); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:900px) {
+      .answer-grid { grid-template-columns:1fr; gap:2.5rem; }
+      .arms-layout { grid-template-columns:1fr; }
+      .proto-grid { grid-template-columns:1fr; }
+      .proto-col { border-right:none; border-bottom:1px solid var(--line); padding:2rem 0; }
       .proto-col:last-child { border-bottom:none; }
+      .oc-layout { grid-template-columns:1fr; }
+      .bom-grid { grid-template-columns:1fr 1fr; }
+      .bom-item:nth-child(2n) { border-right:none; }
     }
     @media (max-width:560px) {
-      .mission-layout { grid-template-columns:1fr; }
-      .mission-item { border-right:none; border-top:1px solid var(--line); padding:2rem 0; }
-      .mission-item:first-child { border-top:none; }
-      .ms { grid-template-columns:4.5rem 1fr; gap:1.5rem; }
-      .hero-links { margin-left:0; }
+      .bom-grid { grid-template-columns:1fr; }
+      .bom-item { border-right:none; border-bottom:1px solid var(--line); padding:1.8rem 0; }
+      .bom-item:last-child { border-bottom:none; }
+      .arm-row { grid-template-columns:3rem 1fr; }
+      .arm-badge { display:none; }
+      .hero-actions { margin-left:0; }
     }
-
-    /* ── REDUCED MOTION ─────────── */
     @media (prefers-reduced-motion:reduce) {
-      *, *::before, *::after {
-        animation-duration:0.001ms !important;
-        transition-duration:0.001ms !important;
-      }
+      *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important; }
       .h1-inner { transform:none; }
     }
   </style>
 </head>
 <body>
-
-<a href="#mission" class="skip-link">Skip to content</a>
+<a class="skip" href="#question">Skip to content</a>
 <canvas id="bg" aria-hidden="true"></canvas>
-<div id="loader" aria-hidden="true"><div id="loader-word">Submarine</div></div>
+
+<div id="loader" aria-hidden="true">
+  <div id="loader-inner">
+    <span id="loader-word">Submarine</span>
+    <span id="loader-sub">OpenClaw · Six Arms · One Brain</span>
+  </div>
+</div>
 
 <div id="main">
 
@@ -427,135 +240,134 @@
 <section id="hero" aria-label="Introduction">
   <canvas id="hero-canvas" aria-hidden="true"></canvas>
   <div class="wrap hero-content">
-    <h1 aria-label="Submarine">
-      <span class="h1-line"><span class="h1-inner">Sub</span></span>
-      <span class="h1-line"><span class="h1-inner" style="padding-left:clamp(2rem,8vw,9rem)">ma</span></span>
-      <span class="h1-line"><span class="h1-inner">rine.</span></span>
+    <h1>
+      <span class="h1-line"><span class="h1-inner">Six</span></span>
+      <span class="h1-line"><span class="h1-inner" style="padding-left:clamp(2rem,8vw,8rem)">arms.</span></span>
+      <span class="h1-line"><span class="h1-inner">One</span></span>
+      <span class="h1-line"><span class="h1-inner" style="padding-left:clamp(2rem,8vw,8rem)">brain.</span></span>
     </h1>
-    <div class="hero-meta">
-      <p class="hero-tagline">A vessel that explores, cleans, and thinks.<br>Open source. Built to save oceans.</p>
-      <nav class="hero-links" aria-label="Primary">
-        <a href="https://github.com/dontriskit/submarine" class="nav-link primary">GitHub →</a>
-        <a href="#mission" class="nav-link">Explore</a>
+    <div class="hero-foot">
+      <p class="hero-tagline">A desk radiotelescope built from OpenClaw agents.<br>Each arm thinks. The head orchestrates.</p>
+      <nav class="hero-actions" aria-label="Primary">
+        <a href="https://github.com/dontriskit/submarine" class="btn primary">GitHub →</a>
+        <a href="#question" class="btn">The idea</a>
+        <a href="#bom" class="btn">Build it</a>
       </nav>
     </div>
   </div>
 </section>
 
-<!-- MISSION -->
-<section id="mission">
+<!-- THE QUESTION -->
+<section id="question">
   <div class="wrap">
-    <p class="eyebrow reveal">What it does</p>
-    <div class="mission-layout">
-      <div class="mission-item reveal">
-        <div class="mission-num">01</div>
-        <h3>Explore</h3>
-        <p>Map ocean floors. Collect water samples. Discover what three-quarters of the planet hasn't shown us yet.</p>
+    <p class="eyebrow reveal">Origin</p>
+    <div class="q-block reveal">
+      <blockquote>
+        "If you were embodied as a submarine with arms, how many arms would you like to use? Consider the same energy budget. How would you integrate those arms into the OpenClaw framework — CLI, MCP, or API?"
+      </blockquote>
+      <div class="q-source">— Maksym Huczynski · Submarine design session · March 2026</div>
+    </div>
+
+    <div class="answer-grid">
+      <div class="answer-col reveal">
+        <h3>Six arms.</h3>
+        <p>An octopus has eight but two are for locomotion. A fixed desk tool doesn't move — it works. Six arms at 60° radial spacing fits a 200W bench supply (~150W peak), and a single head can meaningfully supervise six agents before coordination overhead kills the gain. Eight starts losing efficiency.</p>
       </div>
-      <div class="mission-item reveal">
-        <div class="mission-num">02</div>
-        <h3>Clean</h3>
-        <p>Detect floating debris. Extract it. Return to dock. Autonomous collection at oceanic scale.</p>
-      </div>
-      <div class="mission-item reveal">
-        <div class="mission-num">03</div>
-        <h3>Think</h3>
-        <p>Multi-agent swarm. Six arms, one brain. Each arm an autonomous AI. The head orchestrates.</p>
-      </div>
-      <div class="mission-item reveal">
-        <div class="mission-num">04</div>
-        <h3>Deploy</h3>
-        <p>Launch drones from below the surface. Two domains, one vessel.</p>
-      </div>
-      <div class="mission-item reveal">
-        <div class="mission-num">05</div>
-        <h3>Listen</h3>
-        <p>Radiotelescope array. One arm swaps antennas. Another reads the signal.</p>
-      </div>
-      <div class="mission-item reveal">
-        <div class="mission-num">06</div>
-        <h3>Connect</h3>
-        <p>Undersea data relay. Part of the global ocean nervous system.</p>
+      <div class="answer-col reveal">
+        <h3>MCP. Not CLI or API.</h3>
+        <p>CLI forks a new process per command — 150ms+ startup kills real-time sensor feedback. REST polling wastes energy and drops state between calls. MCP is persistent, bidirectional, streaming. State lives in the server. Arms and head stay connected continuously. Purpose-built for agents talking to agents.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ARCHITECTURE -->
-<section id="architecture">
+<!-- THE SIX ARMS -->
+<section id="arms">
   <div class="wrap">
-    <p class="eyebrow reveal">How it thinks</p>
-    <div class="arch-layout">
+    <p class="eyebrow reveal">The arms</p>
+    <div class="arms-layout">
       <div>
-        <h2 class="reveal">Six arms.<br>One brain.</h2>
-        <p class="lead">Each arm is an independent agent. They share memory on disk but think in isolation. The head decomposes tasks, resolves conflicts, ships. MCP keeps every connection alive.</p>
-        <div class="arch-arms" role="list" aria-label="Agent arms">
-          <div class="arch-arm" role="listitem">
-            <div class="arm-dot" aria-hidden="true"></div>
-            <div class="arm-id">arm 01</div>
-            <div class="arm-label">Antenna swap</div>
-            <div class="arm-state on">active</div>
+        <h2 class="reveal">Each arm is<br>an OpenClaw<br>instance.</h2>
+        <p class="lead">Same base model. Different MCP toolset. Different memory namespace. The head is the operator — it doesn't do science, it decomposes tasks and arbitrates conflicts. Arms never talk to each other directly.</p>
+        <div class="arm-list" role="list" aria-label="Agent arms">
+          <div class="arm-row" role="listitem">
+            <div class="arm-num">arm 01</div>
+            <div class="arm-info"><div class="arm-name">Antenna swap</div><div class="arm-role">servo control · PCA9685 · stepper driver</div></div>
+            <div class="arm-badge">active</div>
           </div>
-          <div class="arch-arm" role="listitem">
-            <div class="arm-dot" aria-hidden="true"></div>
-            <div class="arm-id">arm 02</div>
-            <div class="arm-label">Signal reader</div>
-            <div class="arm-state on">active</div>
+          <div class="arm-row" role="listitem">
+            <div class="arm-num">arm 02</div>
+            <div class="arm-info"><div class="arm-name">Signal reader</div><div class="arm-role">RTL-SDR · GNU Radio · FFT pipeline</div></div>
+            <div class="arm-badge">active</div>
           </div>
-          <div class="arch-arm" role="listitem">
-            <div class="arm-dot" aria-hidden="true"></div>
-            <div class="arm-id">arm 03</div>
-            <div class="arm-label">Power management</div>
-            <div class="arm-state on">active</div>
+          <div class="arm-row" role="listitem">
+            <div class="arm-num">arm 03</div>
+            <div class="arm-info"><div class="arm-name">Power management</div><div class="arm-role">INA219 current sensors · rail monitor · throttle</div></div>
+            <div class="arm-badge">active</div>
           </div>
-          <div class="arch-arm" role="listitem">
-            <div class="arm-dot" aria-hidden="true"></div>
-            <div class="arm-id">arm 04</div>
-            <div class="arm-label">Data logger</div>
-            <div class="arm-state on">active</div>
+          <div class="arm-row" role="listitem">
+            <div class="arm-num">arm 04</div>
+            <div class="arm-info"><div class="arm-name">Data logger</div><div class="arm-role">SQLite · IQ samples · timestamps · metadata</div></div>
+            <div class="arm-badge">active</div>
           </div>
-          <div class="arch-arm" role="listitem">
-            <div class="arm-dot dim" aria-hidden="true"></div>
-            <div class="arm-id">arm 05</div>
-            <div class="arm-label">Calibration</div>
-            <div class="arm-state">standby</div>
+          <div class="arm-row" role="listitem">
+            <div class="arm-num">arm 05</div>
+            <div class="arm-info"><div class="arm-name">Calibration</div><div class="arm-role">noise floor · gain curves · baseline drift</div></div>
+            <div class="arm-badge dim">standby</div>
           </div>
-          <div class="arch-arm" role="listitem">
-            <div class="arm-dot dim" aria-hidden="true"></div>
-            <div class="arm-id">arm 06</div>
-            <div class="arm-label">Comms relay</div>
-            <div class="arm-state">standby</div>
+          <div class="arm-row" role="listitem">
+            <div class="arm-num">arm 06</div>
+            <div class="arm-info"><div class="arm-name">Comms relay</div><div class="arm-role">HTTP uplink · receives new directives</div></div>
+            <div class="arm-badge dim">standby</div>
           </div>
         </div>
       </div>
+
       <div aria-hidden="true">
-        <svg id="arch-svg" viewBox="0 0 380 380" fill="none" role="img" aria-label="Agent swarm diagram">
-          <circle cx="190" cy="190" r="130" stroke="rgba(240,244,248,0.05)" stroke-width="1"/>
-          <circle cx="190" cy="190" r="80"  stroke="rgba(240,244,248,0.05)" stroke-width="1"/>
-          <line x1="190" y1="190" x2="320" y2="100" stroke="rgba(77,184,232,0.12)" stroke-width="1"/>
-          <line x1="190" y1="190" x2="190" y2="320" stroke="rgba(77,184,232,0.12)" stroke-width="1"/>
-          <line x1="190" y1="190" x2="60"  y2="100" stroke="rgba(77,184,232,0.12)" stroke-width="1"/>
-          <line x1="190" y1="190" x2="60"  y2="280" stroke="rgba(77,184,232,0.12)" stroke-width="1"/>
-          <line x1="190" y1="190" x2="190" y2="60"  stroke="rgba(240,244,248,0.04)" stroke-width="1" stroke-dasharray="3,4"/>
-          <line x1="190" y1="190" x2="320" y2="280" stroke="rgba(240,244,248,0.04)" stroke-width="1" stroke-dasharray="3,4"/>
-          <circle cx="320" cy="100" r="14" fill="rgba(6,10,15,0.98)" stroke="rgba(77,184,232,0.35)" stroke-width="1.5"/>
-          <circle cx="190" cy="320" r="14" fill="rgba(6,10,15,0.98)" stroke="rgba(77,184,232,0.35)" stroke-width="1.5"/>
-          <circle cx="60"  cy="100" r="14" fill="rgba(6,10,15,0.98)" stroke="rgba(77,184,232,0.35)" stroke-width="1.5"/>
-          <circle cx="60"  cy="280" r="14" fill="rgba(6,10,15,0.98)" stroke="rgba(77,184,232,0.35)" stroke-width="1.5"/>
-          <circle cx="190" cy="60"  r="14" fill="rgba(6,10,15,0.98)" stroke="rgba(240,244,248,0.1)"  stroke-width="1.5"/>
-          <circle cx="320" cy="280" r="14" fill="rgba(6,10,15,0.98)" stroke="rgba(240,244,248,0.1)"  stroke-width="1.5"/>
-          <circle cx="320" cy="100" r="4" fill="rgba(77,184,232,0.8)"/>
-          <circle cx="190" cy="320" r="4" fill="rgba(77,184,232,0.8)"/>
-          <circle cx="60"  cy="100" r="4" fill="rgba(77,184,232,0.8)"/>
-          <circle cx="60"  cy="280" r="4" fill="rgba(77,184,232,0.8)"/>
-          <circle cx="190" cy="60"  r="4" fill="rgba(240,244,248,0.2)"/>
-          <circle cx="320" cy="280" r="4" fill="rgba(240,244,248,0.2)"/>
-          <circle cx="190" cy="190" r="36" fill="rgba(6,10,15,0.98)" stroke="rgba(240,244,248,0.15)" stroke-width="1.5"/>
-          <circle cx="190" cy="190" r="5"  fill="rgba(240,244,248,0.7)"/>
-          <circle class="pkt" cx="190" cy="190" r="3" fill="rgba(77,184,232,0.9)" opacity="0"/>
-          <circle class="pkt" cx="190" cy="190" r="3" fill="rgba(77,184,232,0.9)" opacity="0"/>
-          <circle class="pkt" cx="190" cy="190" r="3" fill="rgba(77,184,232,0.9)" opacity="0"/>
-          <circle class="pkt" cx="190" cy="190" r="3" fill="rgba(77,184,232,0.9)" opacity="0"/>
+        <svg id="orbit-svg" viewBox="0 0 400 400" fill="none">
+          <!-- rings -->
+          <circle cx="200" cy="200" r="140" stroke="rgba(240,244,248,0.04)" stroke-width="1"/>
+          <circle cx="200" cy="200" r="85"  stroke="rgba(240,244,248,0.04)" stroke-width="1"/>
+          <!-- spokes active -->
+          <line x1="200" y1="200" x2="340" y2="110" stroke="rgba(77,184,232,0.1)" stroke-width="1"/>
+          <line x1="200" y1="200" x2="340" y2="290" stroke="rgba(77,184,232,0.1)" stroke-width="1"/>
+          <line x1="200" y1="200" x2="200" y2="340" stroke="rgba(77,184,232,0.1)" stroke-width="1"/>
+          <line x1="200" y1="200" x2="60"  y2="290" stroke="rgba(77,184,232,0.1)" stroke-width="1"/>
+          <!-- spokes standby -->
+          <line x1="200" y1="200" x2="60"  y2="110" stroke="rgba(240,244,248,0.03)" stroke-width="1" stroke-dasharray="3,5"/>
+          <line x1="200" y1="200" x2="200" y2="60"  stroke="rgba(240,244,248,0.03)" stroke-width="1" stroke-dasharray="3,5"/>
+          <!-- arm nodes active -->
+          <circle cx="340" cy="110" r="16" fill="rgba(6,10,15,.98)" stroke="rgba(77,184,232,0.3)" stroke-width="1.5"/>
+          <circle cx="340" cy="290" r="16" fill="rgba(6,10,15,.98)" stroke="rgba(77,184,232,0.3)" stroke-width="1.5"/>
+          <circle cx="200" cy="340" r="16" fill="rgba(6,10,15,.98)" stroke="rgba(77,184,232,0.3)" stroke-width="1.5"/>
+          <circle cx="60"  cy="290" r="16" fill="rgba(6,10,15,.98)" stroke="rgba(77,184,232,0.3)" stroke-width="1.5"/>
+          <!-- arm nodes standby -->
+          <circle cx="60"  cy="110" r="16" fill="rgba(6,10,15,.98)" stroke="rgba(240,244,248,0.08)" stroke-width="1.5"/>
+          <circle cx="200" cy="60"  r="16" fill="rgba(6,10,15,.98)" stroke="rgba(240,244,248,0.08)" stroke-width="1.5"/>
+          <!-- active dots -->
+          <circle cx="340" cy="110" r="4" fill="rgba(77,184,232,0.85)"/>
+          <circle cx="340" cy="290" r="4" fill="rgba(77,184,232,0.85)"/>
+          <circle cx="200" cy="340" r="4" fill="rgba(77,184,232,0.85)"/>
+          <circle cx="60"  cy="290" r="4" fill="rgba(77,184,232,0.85)"/>
+          <!-- standby dots -->
+          <circle cx="60"  cy="110" r="4" fill="rgba(240,244,248,0.18)"/>
+          <circle cx="200" cy="60"  r="4" fill="rgba(240,244,248,0.18)"/>
+          <!-- head -->
+          <circle cx="200" cy="200" r="38" fill="rgba(6,10,15,.98)" stroke="rgba(240,244,248,0.12)" stroke-width="1.5"/>
+          <circle cx="200" cy="200" r="5"  fill="rgba(240,244,248,0.7)"/>
+          <!-- labels -->
+          <text x="340" y="108" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="7" fill="rgba(77,184,232,0.6)">01</text>
+          <text x="340" y="290" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="7" fill="rgba(77,184,232,0.6)">02</text>
+          <text x="200" y="340" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="7" fill="rgba(77,184,232,0.6)">03</text>
+          <text x="60"  y="290" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="7" fill="rgba(77,184,232,0.6)">04</text>
+          <text x="60"  y="108" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="7" fill="rgba(240,244,248,0.25)">05</text>
+          <text x="200" y="60"  text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="7" fill="rgba(240,244,248,0.25)">06</text>
+          <text x="200" y="200" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="8" fill="rgba(240,244,248,0.5)">HEAD</text>
+          <!-- packets (animated) -->
+          <circle class="pkt" r="3" fill="rgba(77,184,232,0.9)" opacity="0"/>
+          <circle class="pkt" r="3" fill="rgba(77,184,232,0.9)" opacity="0"/>
+          <circle class="pkt" r="3" fill="rgba(77,184,232,0.9)" opacity="0"/>
+          <circle class="pkt" r="3" fill="rgba(77,184,232,0.9)" opacity="0"/>
         </svg>
       </div>
     </div>
@@ -566,276 +378,280 @@
 <section id="protocol">
   <div class="wrap">
     <p class="eyebrow reveal">Why MCP</p>
-    <div class="proto-layout reveal">
+    <div class="proto-grid reveal">
       <div class="proto-col">
-        <div class="proto-name">CLI</div>
+        <div class="proto-label">CLI</div>
         <div class="proto-flow" aria-hidden="true">
-          <svg viewBox="0 0 160 48">
-            <line x1="0"  y1="24" x2="40"  y2="24" stroke="rgba(107,132,153,0.4)" stroke-width="1.5"/>
-            <line x1="60" y1="24" x2="100" y2="24" stroke="rgba(107,132,153,0.4)" stroke-width="1.5"/>
-            <line x1="120"y1="24" x2="160" y2="24" stroke="rgba(107,132,153,0.25)"stroke-width="1.5"/>
-            <line x1="44" y1="14" x2="44"  y2="34" stroke="rgba(107,132,153,0.3)" stroke-width="1.5"/>
-            <line x1="104"y1="14" x2="104" y2="34" stroke="rgba(107,132,153,0.3)" stroke-width="1.5"/>
+          <svg viewBox="0 0 160 44">
+            <line x1="0"   y1="22" x2="42"  y2="22" stroke="rgba(107,132,153,.4)" stroke-width="1.5"/>
+            <line x1="62"  y1="22" x2="100" y2="22" stroke="rgba(107,132,153,.4)" stroke-width="1.5"/>
+            <line x1="120" y1="22" x2="160" y2="22" stroke="rgba(107,132,153,.25)"stroke-width="1.5"/>
+            <line x1="46"  y1="13" x2="46"  y2="31" stroke="rgba(107,132,153,.3)" stroke-width="1.5"/>
+            <line x1="104" y1="13" x2="104" y2="31" stroke="rgba(107,132,153,.3)" stroke-width="1.5"/>
           </svg>
         </div>
-        <div class="proto-verdict dim">Insufficient.</div>
-        <p class="proto-desc">Fork overhead per command. No streaming. Breaks under continuous sensor feedback at arm speed.</p>
+        <div class="proto-verdict out">Insufficient.</div>
+        <p class="proto-desc">Fork overhead per command. 150ms+ startup. No streaming. Breaks under continuous sensor feedback.</p>
       </div>
       <div class="proto-col">
-        <div class="proto-name">REST</div>
+        <div class="proto-label">REST API</div>
         <div class="proto-flow" aria-hidden="true">
-          <svg viewBox="0 0 160 48">
-            <line x1="0" y1="18" x2="160" y2="18" stroke="rgba(107,132,153,0.35)" stroke-width="1.5" stroke-dasharray="7,5"/>
-            <line x1="160"y1="30" x2="0"   y2="30" stroke="rgba(107,132,153,0.22)" stroke-width="1.5" stroke-dasharray="7,5"/>
+          <svg viewBox="0 0 160 44">
+            <line x1="0" y1="16" x2="160" y2="16" stroke="rgba(107,132,153,.35)" stroke-width="1.5" stroke-dasharray="7,5"/>
+            <line x1="160" y1="28" x2="0" y2="28" stroke="rgba(107,132,153,.22)" stroke-width="1.5" stroke-dasharray="7,5"/>
           </svg>
         </div>
-        <div class="proto-verdict dim">Partial.</div>
-        <p class="proto-desc">Request and response. Polling wastes energy. State doesn't persist between calls.</p>
+        <div class="proto-verdict out">Partial.</div>
+        <p class="proto-desc">Request and response only. Polling wastes energy. State lost between calls. Not built for agents.</p>
       </div>
       <div class="proto-col">
-        <div class="proto-name">MCP</div>
+        <div class="proto-label">MCP</div>
         <div class="proto-flow" aria-hidden="true">
-          <svg viewBox="0 0 160 48" id="mcp-svg">
-            <line x1="0" y1="24" x2="160" y2="24" stroke="rgba(77,184,232,0.2)" stroke-width="2"/>
-            <circle class="mpkt" cx="0" cy="24" r="3.5" fill="rgba(77,184,232,0.9)" opacity="0"/>
-            <circle class="mpkt" cx="0" cy="24" r="3.5" fill="rgba(77,184,232,0.7)" opacity="0"/>
-            <circle class="mpkt" cx="0" cy="24" r="3.5" fill="rgba(77,184,232,0.6)" opacity="0"/>
+          <svg viewBox="0 0 160 44" id="mcp-svg">
+            <line x1="0" y1="22" x2="160" y2="22" stroke="rgba(77,184,232,0.2)" stroke-width="2"/>
+            <circle class="mpkt" r="3.5" fill="rgba(77,184,232,0.9)" opacity="0"/>
+            <circle class="mpkt" r="3.5" fill="rgba(77,184,232,0.7)" opacity="0"/>
+            <circle class="mpkt" r="3.5" fill="rgba(77,184,232,0.55)" opacity="0"/>
           </svg>
         </div>
         <div class="proto-verdict">Persistent.</div>
-        <p class="proto-desc">Bidirectional. Streaming sensor data. State lives in the server. Purpose-built for agents.</p>
+        <p class="proto-desc">Bidirectional socket. Streaming sensor data. State lives in the server. Purpose-built for agents talking to agents.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- MILESTONES -->
-<section id="milestones">
+<!-- OPENCLAW ARCHITECTURE -->
+<section id="openclaw">
   <div class="wrap">
-    <p class="eyebrow reveal">The road</p>
-    <h2 class="reveal">2026 — 2036.</h2>
-    <div role="list" aria-label="Project milestones">
-      <div class="ms" role="listitem"><div class="ms-year">2026</div><div class="ms-body"><div class="ms-title">First submarine deployed.</div><p class="ms-desc">A small hull enters the water. The journey begins.</p></div></div>
-      <div class="ms" role="listitem"><div class="ms-year">2027</div><div class="ms-body"><div class="ms-title">First water sample collected.</div><p class="ms-desc">Onboard sensors gather ocean data. The submarine becomes a scientist.</p></div></div>
-      <div class="ms" role="listitem"><div class="ms-year">2028</div><div class="ms-body"><div class="ms-title">First drone launched.</div><p class="ms-desc">A drone deploys from below the surface. Two domains, one vessel.</p></div></div>
-      <div class="ms" role="listitem"><div class="ms-year">2030</div><div class="ms-body"><div class="ms-title">First AI-controlled submarine.</div><p class="ms-desc">Six arms, one brain. The swarm takes over. Fully autonomous.</p></div></div>
-      <div class="ms" role="listitem"><div class="ms-year">2032</div><div class="ms-body"><div class="ms-title">First debris discovery.</div><p class="ms-desc">AI detects floating trash in open ocean. The cleanup begins.</p></div></div>
-      <div class="ms" role="listitem"><div class="ms-year">2034</div><div class="ms-body"><div class="ms-title">First solid extraction.</div><p class="ms-desc">Retrieves an object from the ocean floor. Brings it home.</p></div></div>
-      <div class="ms" role="listitem"><div class="ms-year">2036</div><div class="ms-body"><div class="ms-title">First mind-controlled submarine.</div><p class="ms-desc">The human and the machine become one. The promise kept.</p></div></div>
+    <p class="eyebrow reveal">OpenClaw topology</p>
+    <div class="oc-layout">
+      <div>
+        <h2 class="reveal">Head as operator.<br>Arms as agents.</h2>
+        <p class="lead">The head doesn't do science — it decomposes tasks and arbitrates conflicts. If arm-01 wants to swap antennas while arm-02 is mid-observation, the head decides. Arms never message each other. Everything routes through the head. The graph stays acyclic.</p>
+        <p class="reveal" style="margin-top:1.5rem;">Each arm is "Jared" — same base model, different MCP toolset, different memory namespace. Swap in a better SDR without touching the head. Upgrade the operator model without rewiring the arms.</p>
+        <div style="margin-top:2.5rem;" class="reveal">
+          <a href="https://github.com/dontriskit/submarine/issues/10" class="btn primary">Full RFC on GitHub →</a>
+        </div>
+      </div>
+      <div class="oc-diagram reveal" role="img" aria-label="OpenClaw architecture diagram">
+        <span class="oc-head">HEAD (OpenClaw operator)</span><br>
+        <span class="oc-comment">│  mission context</span><br>
+        <span class="oc-comment">│  task decomposition</span><br>
+        <span class="oc-comment">│  conflict resolution</span><br>
+        ├─ <span class="oc-arm">arm-01</span> <span class="oc-comment">antenna swap</span><br>
+        │  &nbsp;&nbsp; <span class="oc-comment">tool: swap_antenna(target)</span><br>
+        ├─ <span class="oc-arm">arm-02</span> <span class="oc-comment">signal reader</span><br>
+        │  &nbsp;&nbsp; <span class="oc-comment">tool: observe(freq, duration)</span><br>
+        ├─ <span class="oc-arm">arm-03</span> <span class="oc-comment">power mgmt</span><br>
+        │  &nbsp;&nbsp; <span class="oc-comment">tool: power_status()</span><br>
+        ├─ <span class="oc-arm">arm-04</span> <span class="oc-comment">data logger</span><br>
+        │  &nbsp;&nbsp; <span class="oc-comment">tool: log(obs), query(filter)</span><br>
+        ├─ <span class="oc-arm">arm-05</span> <span class="oc-comment">calibration</span><br>
+        └─ <span class="oc-arm">arm-06</span> <span class="oc-comment">comms relay</span><br>
+        <br>
+        <span class="oc-comment">all connections: MCP (persistent)</span><br>
+        <span class="oc-comment">energy budget: ~150W peak</span><br>
+        <span class="oc-comment">build time: few weeks</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOM -->
+<section id="bom">
+  <div class="wrap">
+    <p class="eyebrow reveal">Build it</p>
+    <h2 class="reveal">~$200–400.<br>Fits on a desk.</h2>
+    <div class="bom-grid">
+      <div class="bom-item reveal">
+        <div class="bom-num">core</div>
+        <div class="bom-name">Raspberry Pi 5<br>or laptop</div>
+        <p class="bom-desc">Runs the OpenClaw head. Holds mission context. Arbitrates between arms.</p>
+        <div class="bom-price">~$80</div>
+      </div>
+      <div class="bom-item reveal">
+        <div class="bom-num">arm 01</div>
+        <div class="bom-name">PCA9685 +<br>stepper driver</div>
+        <p class="bom-desc">Physically rotates the antenna mount. MCP tool: <code style="font-size:.8em;color:var(--accent)">swap_antenna(target)</code></p>
+        <div class="bom-price">~$25</div>
+      </div>
+      <div class="bom-item reveal">
+        <div class="bom-num">arm 02</div>
+        <div class="bom-name">RTL-SDR or<br>HackRF</div>
+        <p class="bom-desc">Reads the signal. GNU Radio + FFT pipeline. MCP tool: <code style="font-size:.8em;color:var(--accent)">observe(freq_mhz, duration_sec)</code></p>
+        <div class="bom-price">$25–$300</div>
+      </div>
+      <div class="bom-item reveal">
+        <div class="bom-num">arm 03</div>
+        <div class="bom-name">INA219 current<br>sensors</div>
+        <p class="bom-desc">Monitors rail voltages. Throttles arms when budget is tight.</p>
+        <div class="bom-price">~$10</div>
+      </div>
+      <div class="bom-item reveal">
+        <div class="bom-num">arm 04</div>
+        <div class="bom-name">SQLite +<br>filesystem</div>
+        <p class="bom-desc">Logs IQ samples, timestamps, metadata. Query interface for the head.</p>
+        <div class="bom-price">free</div>
+      </div>
+      <div class="bom-item reveal">
+        <div class="bom-num">arms 05–06</div>
+        <div class="bom-name">Software<br>only</div>
+        <p class="bom-desc">Calibration routines and HTTP uplink. No additional hardware.</p>
+        <div class="bom-price">free</div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- CTA -->
-<section id="cta" aria-labelledby="cta-heading">
+<section id="cta" aria-labelledby="cta-h">
   <canvas id="cta-canvas" aria-hidden="true"></canvas>
   <div class="wrap cta-inner">
-    <h2 class="cta-headline reveal" id="cta-heading">The ocean<br><em>is waiting.</em></h2>
+    <h2 class="cta-h reveal" id="cta-h">Build the<br><em>octopus.</em></h2>
     <div class="cta-links reveal">
-      <a href="https://github.com/dontriskit/submarine" class="nav-link primary">Star on GitHub →</a>
-      <a href="https://github.com/dontriskit/submarine/blob/main/ARCHITECTURE.md" class="nav-link">Architecture</a>
-      <a href="https://github.com/dontriskit/submarine/issues" class="nav-link">Contribute</a>
+      <a href="https://github.com/dontriskit/submarine" class="btn primary">Star on GitHub →</a>
+      <a href="https://github.com/dontriskit/submarine/issues/10" class="btn">Read the RFC</a>
+      <a href="https://github.com/dontriskit/submarine/issues" class="btn">Contribute</a>
     </div>
   </div>
 </section>
 
 <footer role="contentinfo">
-  <div class="footer-copy">
-    <a href="https://github.com/dontriskit">@dontriskit</a>
-    <span aria-hidden="true" style="margin:0 0.8rem;opacity:0.4">·</span>
-    Octopus by <a href="https://github.com/jaredtribe">Jared</a> (OS-1)
-  </div>
-  <div class="footer-copy">
-    <a href="https://github.com/dontriskit/submarine/blob/main/LICENSE">MIT License</a>
-    <span aria-hidden="true" style="margin:0 0.8rem;opacity:0.4">·</span>
-    <a href="https://github.com/dontriskit/submarine">GitHub</a>
-  </div>
+  <div class="fc"><a href="https://github.com/dontriskit">@dontriskit</a> <span aria-hidden="true" style="margin:0 .7rem;opacity:.3">·</span> Octopus by <a href="https://github.com/jaredtribe">Jared</a> (OS-1)</div>
+  <div class="fc"><a href="https://github.com/dontriskit/submarine/blob/main/LICENSE">MIT</a> <span aria-hidden="true" style="margin:0 .7rem;opacity:.3">·</span> <a href="https://github.com/dontriskit/submarine">GitHub</a></div>
 </footer>
 
-</div>
+</div><!-- /main -->
 
 <script>
-// ─── BACKGROUND CANVAS ────────────────────────
-const bg = document.getElementById('bg');
-const bgx = bg.getContext('2d');
-let bW, bH, bF=0, bPts=[];
-
-function bgResize() {
-  bW = bg.width = window.innerWidth;
-  bH = bg.height = window.innerHeight;
-  bPts = Array.from({length: Math.floor(bW*bH/16000)}, () => ({
-    x: Math.random()*bW, y: Math.random()*bH,
-    r: Math.random()*0.8+0.15,
-    vx: (Math.random()-0.5)*0.1, vy: (Math.random()-0.5)*0.05,
-    p: Math.random()*Math.PI*2, a: Math.random()*0.1+0.02
+// ── BG CANVAS ────────────────────────────────
+const bg=document.getElementById('bg'), bgx=bg.getContext('2d');
+let bW,bH,bF=0,bPts=[];
+function bgResize(){
+  bW=bg.width=window.innerWidth; bH=bg.height=window.innerHeight;
+  bPts=Array.from({length:Math.floor(bW*bH/15000)},()=>({
+    x:Math.random()*bW,y:Math.random()*bH,
+    r:Math.random()*.85+.15,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.05,
+    p:Math.random()*Math.PI*2,a:Math.random()*.1+.02
   }));
 }
-
-function bgRender() {
+function bgRender(){
   bF++;
   bgx.clearRect(0,0,bW,bH);
-  const g = bgx.createLinearGradient(0,0,0,bH);
-  g.addColorStop(0,'rgba(0,6,14,0.35)');
-  g.addColorStop(1,'rgba(0,2,6,0.6)');
+  const g=bgx.createLinearGradient(0,0,0,bH);
+  g.addColorStop(0,'rgba(0,6,14,.35)'); g.addColorStop(1,'rgba(0,2,6,.6)');
   bgx.fillStyle=g; bgx.fillRect(0,0,bW,bH);
-
-  // One god ray
-  const rx = bW*(0.45+Math.sin(bF*0.0007)*0.05);
-  const rg = bgx.createLinearGradient(rx,0,rx,bH*0.55);
-  rg.addColorStop(0,'rgba(0,110,170,0.04)');
-  rg.addColorStop(1,'rgba(0,0,0,0)');
-  bgx.beginPath();
-  bgx.moveTo(rx-bW*0.1,0); bgx.lineTo(rx+bW*0.1,0);
-  bgx.lineTo(rx+bW*0.025,bH*0.55); bgx.lineTo(rx-bW*0.025,bH*0.55);
+  const rx=bW*(.45+Math.sin(bF*.0007)*.05);
+  const rg=bgx.createLinearGradient(rx,0,rx,bH*.5);
+  rg.addColorStop(0,'rgba(0,100,160,.04)'); rg.addColorStop(1,'rgba(0,0,0,0)');
+  bgx.beginPath(); bgx.moveTo(rx-bW*.09,0); bgx.lineTo(rx+bW*.09,0);
+  bgx.lineTo(rx+bW*.022,bH*.5); bgx.lineTo(rx-bW*.022,bH*.5);
   bgx.fillStyle=rg; bgx.fill();
-
   bPts.forEach(p=>{
-    p.x+=p.vx+Math.sin(bF*0.001+p.p)*0.06;
-    p.y+=p.vy; p.p+=0.009;
-    if(p.x<0)p.x=bW; if(p.x>bW)p.x=0;
-    if(p.y<0)p.y=bH; if(p.y>bH)p.y=0;
-    const a=p.a*(0.4+0.6*Math.sin(p.p));
+    p.x+=p.vx+Math.sin(bF*.001+p.p)*.06; p.y+=p.vy; p.p+=.009;
+    if(p.x<0)p.x=bW; if(p.x>bW)p.x=0; if(p.y<0)p.y=bH; if(p.y>bH)p.y=0;
     bgx.beginPath(); bgx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    bgx.fillStyle=`rgba(0,170,210,${a})`; bgx.fill();
+    bgx.fillStyle=`rgba(0,170,210,${p.a*(.4+.6*Math.sin(p.p))})`; bgx.fill();
   });
   requestAnimationFrame(bgRender);
 }
-window.addEventListener('resize', bgResize);
-bgResize(); bgRender();
+window.addEventListener('resize',bgResize); bgResize(); bgRender();
 
-// ─── HERO CANVAS ─────────────────────────────
-const hc = document.getElementById('hero-canvas');
-const hx = hc.getContext('2d');
+// ── HERO CANVAS ──────────────────────────────
+const hc=document.getElementById('hero-canvas'),hx=hc.getContext('2d');
 let hF=0;
-function hResize() { hc.width=hc.offsetWidth||window.innerWidth; hc.height=hc.offsetHeight||window.innerHeight; }
-function hRender() {
-  hF++;
-  const W=hc.width, H=hc.height;
-  hx.clearRect(0,0,W,H);
+function hResize(){hc.width=hc.offsetWidth||window.innerWidth;hc.height=hc.offsetHeight||window.innerHeight;}
+function hRender(){
+  hF++; const W=hc.width,H=hc.height; hx.clearRect(0,0,W,H);
   const g=hx.createRadialGradient(W*.5,H*.25,0,W*.5,H*.6,W*.7);
-  g.addColorStop(0,'rgba(0,18,36,0.55)');
-  g.addColorStop(0.5,'rgba(0,7,16,0.3)');
-  g.addColorStop(1,'rgba(0,0,4,0.85)');
+  g.addColorStop(0,'rgba(0,18,36,.5)'); g.addColorStop(.5,'rgba(0,7,16,.28)'); g.addColorStop(1,'rgba(0,0,4,.82)');
   hx.fillStyle=g; hx.fillRect(0,0,W,H);
-  const lx=W*0.5+Math.sin(hF*0.003)*W*0.04;
-  const lg=hx.createLinearGradient(lx-W*0.1,0,lx+W*0.1,H*0.65);
-  lg.addColorStop(0,'rgba(0,90,150,0.055)');
-  lg.addColorStop(0.6,'rgba(0,50,110,0.018)');
-  lg.addColorStop(1,'rgba(0,0,0,0)');
-  hx.beginPath();
-  hx.moveTo(lx-W*0.16,0); hx.lineTo(lx+W*0.16,0);
-  hx.lineTo(lx+W*0.04,H*0.65); hx.lineTo(lx-W*0.04,H*0.65);
+  const lx=W*.5+Math.sin(hF*.003)*W*.04;
+  const lg=hx.createLinearGradient(lx-W*.1,0,lx+W*.1,H*.65);
+  lg.addColorStop(0,'rgba(0,90,150,.05)'); lg.addColorStop(.6,'rgba(0,50,110,.015)'); lg.addColorStop(1,'rgba(0,0,0,0)');
+  hx.beginPath(); hx.moveTo(lx-W*.15,0); hx.lineTo(lx+W*.15,0);
+  hx.lineTo(lx+W*.035,H*.65); hx.lineTo(lx-W*.035,H*.65);
   hx.fillStyle=lg; hx.fill();
   requestAnimationFrame(hRender);
 }
 new ResizeObserver(hResize).observe(hc); hResize(); hRender();
 
-// ─── CTA CANVAS ──────────────────────────────
-const ctac = document.getElementById('cta-canvas');
-const ctax = ctac.getContext('2d');
+// ── CTA CANVAS ───────────────────────────────
+const ctac=document.getElementById('cta-canvas'),ctax=ctac.getContext('2d');
 let ctaF=0;
-function ctaResize() { ctac.width=ctac.offsetWidth||window.innerWidth; ctac.height=ctac.offsetHeight||window.innerHeight; }
-function ctaRender() {
-  ctaF++;
-  const W=ctac.width, H=ctac.height;
-  ctax.clearRect(0,0,W,H);
+function ctaResize(){ctac.width=ctac.offsetWidth||window.innerWidth;ctac.height=ctac.offsetHeight||window.innerHeight;}
+function ctaRender(){
+  ctaF++; const W=ctac.width,H=ctac.height; ctax.clearRect(0,0,W,H);
   for(let i=0;i<5;i++){
-    const x=W*(0.15+0.7*((i*0.618)%1));
-    const y=H*(0.1+0.5*((i*0.382)%1));
-    const r=70+45*Math.sin(ctaF*0.006+i*1.2);
-    const cg=ctax.createRadialGradient(x+Math.sin(ctaF*0.005+i)*22,y+Math.cos(ctaF*0.004+i)*16,0,x,y,r);
-    cg.addColorStop(0,'rgba(0,140,200,0.04)'); cg.addColorStop(1,'rgba(0,0,0,0)');
-    ctax.beginPath(); ctax.arc(x,y,r,0,Math.PI*2);
-    ctax.fillStyle=cg; ctax.fill();
+    const x=W*(.15+.7*((i*.618)%1)),y=H*(.1+.5*((i*.382)%1)),r=65+40*Math.sin(ctaF*.006+i*1.2);
+    const cg=ctax.createRadialGradient(x+Math.sin(ctaF*.005+i)*20,y+Math.cos(ctaF*.004+i)*15,0,x,y,r);
+    cg.addColorStop(0,'rgba(0,130,190,.04)'); cg.addColorStop(1,'rgba(0,0,0,0)');
+    ctax.beginPath(); ctax.arc(x,y,r,0,Math.PI*2); ctax.fillStyle=cg; ctax.fill();
   }
   requestAnimationFrame(ctaRender);
 }
 new ResizeObserver(ctaResize).observe(ctac); ctaResize(); ctaRender();
 
-// ─── LOADER ───────────────────────────────────
+// ── LOADER ───────────────────────────────────
+anime({targets:'#loader-sub', opacity:[0,.6], duration:900, delay:400, easing:'easeOutQuad'});
 anime({
-  targets: '#loader-word',
-  color: ['rgba(240,244,248,0.06)','rgba(240,244,248,0.6)','rgba(240,244,248,0.06)'],
-  duration: 1800, easing: 'easeInOutQuad',
-  complete: () => anime({
-    targets: '#loader', opacity:0, duration:700, easing:'easeOutQuad',
-    complete: () => { document.getElementById('loader').style.display='none'; startReveal(); }
+  targets:'#loader-word',
+  color:['rgba(240,244,248,0.07)','rgba(240,244,248,0.6)','rgba(240,244,248,0.07)'],
+  duration:1800, easing:'easeInOutQuad',
+  complete:()=>anime({targets:'#loader',opacity:0,duration:700,easing:'easeOutQuad',
+    complete:()=>{document.getElementById('loader').style.display='none';startReveal();}
   })
 });
 
-// ─── HERO REVEAL ─────────────────────────────
-function startReveal() {
-  anime({targets:'#main', opacity:1, duration:500, easing:'easeOutQuad'});
-  anime({
-    targets: '.h1-inner',
-    translateY: ['108%','0%'],
-    duration: 1900,
-    delay: anime.stagger(220, {start:300}),
-    easing: 'easeOutExpo'
-  });
-  anime({
-    targets: '.hero-meta',
-    opacity:[0,1], translateY:[10,0],
-    duration:1400, delay:1900, easing:'easeOutQuad'
-  });
+// ── HERO REVEAL ──────────────────────────────
+function startReveal(){
+  anime({targets:'#main',opacity:1,duration:500,easing:'easeOutQuad'});
+  anime({targets:'.h1-inner',translateY:['110%','0%'],duration:1900,delay:anime.stagger(200,{start:200}),easing:'easeOutExpo'});
+  anime({targets:'.hero-foot',opacity:[0,1],translateY:[10,0],duration:1400,delay:1800,easing:'easeOutQuad'});
 }
 
-// ─── SCROLL REVEALS ───────────────────────────
-const obs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (!e.isIntersecting) return;
-    if (e.target.classList.contains('ms')) {
-      anime({targets:e.target, opacity:[0,1], translateY:[14,0], duration:900, easing:'easeOutExpo'});
-    } else if (e.target.classList.contains('arch-arm')) {
-      anime({targets:e.target, opacity:[0,1], translateX:[-10,0], duration:700, easing:'easeOutExpo'});
-    } else {
-      anime({targets:e.target, opacity:[0,1], translateY:[22,0], duration:1000, easing:'easeOutExpo'});
-    }
-    obs.unobserve(e.target);
+// ── SCROLL REVEALS ───────────────────────────
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    const target=e.target;
+    if(target.classList.contains('arm-row'))
+      anime({targets:target,opacity:[0,1],translateX:[-8,0],duration:700,easing:'easeOutExpo'});
+    else if(target.classList.contains('bom-item'))
+      anime({targets:target,opacity:[0,1],translateY:[12,0],duration:800,easing:'easeOutExpo'});
+    else
+      anime({targets:target,opacity:[0,1],translateY:[20,0],duration:1000,easing:'easeOutExpo'});
+    obs.unobserve(target);
   });
-}, {threshold:0.08});
-document.querySelectorAll('.reveal, .ms, .arch-arm').forEach(el => obs.observe(el));
+},{threshold:.07});
+document.querySelectorAll('.reveal,.arm-row,.bom-item').forEach(el=>obs.observe(el));
 
-// ─── ARCH SVG packets ────────────────────────
-const armPts = [[320,100],[190,320],[60,100],[60,280]];
+// ── ORBIT PACKETS ────────────────────────────
+const armPts=[[340,110],[340,290],[200,340],[60,290]];
 document.querySelectorAll('.pkt').forEach((p,i)=>{
-  const [tx,ty]=armPts[i];
+  const[tx,ty]=armPts[i];
   function fire(){
-    anime({targets:p, cx:[190,tx], cy:[190,ty], opacity:[0,1,1,0],
-      duration:1700+i*180, easing:'easeInOutQuad', delay:i*380,
-      complete:()=>setTimeout(fire,700+Math.random()*1200)
+    anime({targets:p,cx:[200,tx],cy:[200,ty],opacity:[0,1,1,0],
+      duration:1600+i*150,easing:'easeInOutQuad',delay:i*350,
+      complete:()=>setTimeout(fire,600+Math.random()*1100)
     });
   }
-  setTimeout(fire, i*500+3000);
+  setTimeout(fire,i*450+3200);
 });
-
-const archObs=new IntersectionObserver((entries)=>{
+const orbitObs=new IntersectionObserver((entries)=>{
   entries.forEach(e=>{
     if(!e.isIntersecting)return;
-    anime({targets:'#arch-svg', opacity:[0,1], duration:1800, easing:'easeOutQuad', delay:300});
-    archObs.unobserve(e.target);
+    anime({targets:'#orbit-svg',opacity:[0,1],duration:1800,easing:'easeOutQuad',delay:400});
+    orbitObs.unobserve(e.target);
   });
-},{threshold:0.2});
-archObs.observe(document.getElementById('arch-svg'));
+},{threshold:.2});
+const orbitEl=document.getElementById('orbit-svg');
+if(orbitEl)orbitObs.observe(orbitEl);
 
-// Arm list stagger
-const armObs=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(!e.isIntersecting)return;
-    anime({targets:'.arch-arm', opacity:[0,1], translateX:[-8,0],
-      duration:700, delay:anime.stagger(70,{start:300}), easing:'easeOutExpo'
-    });
-    armObs.unobserve(e.target);
-  });
-},{threshold:0.1});
-const armsEl = document.querySelector('.arch-arms');
-if(armsEl) armObs.observe(armsEl);
-
-// ─── MCP PACKETS ─────────────────────────────
-document.querySelectorAll('.mpkt').forEach((p,i)=>{
-  anime({targets:p, cx:[0,160], opacity:[0,1,1,0],
-    duration:1800, delay:i*480, loop:true, easing:'easeInOutQuad'
-  });
+// ── MCP PACKETS ──────────────────────────────
+document.querySelectorAll('#mcp-svg .mpkt').forEach((p,i)=>{
+  anime({targets:p,cx:[0,160],cy:22,opacity:[0,1,1,0],duration:1800,delay:i*450,loop:true,easing:'easeInOutQuad'});
 });
 </script>
 </body>
