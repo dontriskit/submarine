@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/apps/jared-octopus/arms/landing/src/public/$1"
+    }
+  ],
+  "outputDirectory": "apps/jared-octopus/arms/landing/src/public"
+}
