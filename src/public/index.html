@@ -127,116 +127,118 @@
     .wrap { max-width: 1100px; margin: 0 auto; }
 
     /* ===========================
-       HERO
+       HERO — CANNES GRADE
     =========================== */
     #hero {
       min-height: 100vh;
       display: flex; align-items: center; justify-content: center;
       padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Full-bleed depth canvas behind hero only */
+    #hero-depth-canvas {
+      position: absolute; inset: 0; z-index: 0;
     }
 
     .hero-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
+      position: relative; z-index: 1;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      max-width: 1200px;
-      width: 100%;
-      padding: 0 4rem;
+      justify-content: center;
+      text-align: center;
+      max-width: 900px;
+      padding: 0 3rem;
+      gap: 0;
     }
-
-    /* Submarine illustration side */
-    .hero-visual { position: relative; }
-
-    #sub-wrap {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 1;
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
-    /* Sonar display */
-    #sonar-display {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-    }
-
-    /* Instrument panels */
-    .instrument-panel {
-      position: absolute;
-      background: rgba(0,5,15,0.9);
-      border: 1px solid rgba(0,212,255,0.15);
-      padding: 0.8rem 1rem;
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-    }
-
-    .panel-tl { top: 5%; left: 5%; }
-    .panel-tr { top: 5%; right: 5%; text-align: right; }
-    .panel-bl { bottom: 5%; left: 5%; }
-    .panel-br { bottom: 5%; right: 5%; text-align: right; }
-
-    .panel-label { color: var(--muted); margin-bottom: 0.3rem; }
-    .panel-value {
-      font-size: 1.4rem;
-      color: var(--glow);
-      text-shadow: 0 0 10px rgba(0,212,255,0.5);
-      line-height: 1;
-    }
-
-    .panel-unit { color: var(--muted); font-size: 0.55rem; }
-
-    /* Hero text side */
-    .hero-text { }
 
     .hero-eyebrow {
-      font-size: 0.65rem;
-      letter-spacing: 0.4em;
-      color: var(--muted);
-      margin-bottom: 1.5rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.6em;
+      color: rgba(0,212,255,0.25);
+      text-transform: uppercase;
+      margin-bottom: 4rem;
       opacity: 0;
     }
 
     h1.hero-title {
-      font-size: clamp(4rem, 8vw, 7rem);
-      line-height: 0.85;
-      letter-spacing: 0.05em;
+      font-size: clamp(5rem, 14vw, 12rem);
+      line-height: 0.88;
+      letter-spacing: -0.02em;
+      font-weight: 400;
       color: #fff;
-      text-shadow: 0 0 60px rgba(0,212,255,0.3);
-      margin-bottom: 2rem;
+      margin-bottom: 0;
     }
 
     .hero-title .line { display: block; overflow: hidden; }
-    .hero-title .line-inner { display: block; transform: translateY(110%); }
+    .hero-title .line-inner {
+      display: block;
+      transform: translateY(105%);
+    }
 
-    .hero-desc {
-      font-size: 0.9rem;
-      line-height: 1.9;
-      color: var(--muted);
-      max-width: 420px;
-      margin-bottom: 2.5rem;
+    /* The year — set apart, quiet */
+    .hero-year {
+      font-size: 0.65rem;
+      letter-spacing: 0.5em;
+      color: rgba(255,255,255,0.15);
+      margin-top: 3rem;
       opacity: 0;
     }
 
+    /* Single line — the mission statement */
+    .hero-mission {
+      margin-top: 5rem;
+      font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+      line-height: 1;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.3);
+      max-width: 480px;
+      opacity: 0;
+    }
+
+    /* Scroll indicator — minimal, left-aligned */
+    .hero-scroll {
+      position: absolute;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      opacity: 0;
+    }
+
+    .hero-scroll-label {
+      font-size: 0.55rem;
+      letter-spacing: 0.4em;
+      color: rgba(255,255,255,0.15);
+      text-transform: uppercase;
+    }
+
+    .hero-scroll-line {
+      width: 1px;
+      height: 48px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .hero-scroll-fill {
+      width: 100%;
+      height: 100%;
+      background: rgba(0,212,255,0.4);
+      transform: translateY(-100%);
+    }
+
+    /* CTA — ghost, minimal */
     .hero-cta-row {
       display: flex; gap: 1rem; flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 4rem;
       opacity: 0;
     }
-
-    /* Status bar */
-    .hero-status {
-      display: flex; gap: 2rem;
-      margin-top: 3rem;
-      padding-top: 2rem;
-      border-top: 1px solid rgba(0,212,255,0.08);
-      opacity: 0;
-    }
-
-    .status-item { }
-    .status-label { font-size: 0.55rem; letter-spacing: 0.2em; color: var(--muted); }
-    .status-val { font-size: 0.85rem; color: var(--accent); }
 
     /* ===========================
        BUTTONS
@@ -764,143 +766,30 @@
 
 <!-- ====== HERO ====== -->
 <section id="hero">
+  <canvas id="hero-depth-canvas"></canvas>
+
   <div class="hero-inner">
+    <p class="hero-eyebrow">SUBMARINE — OPEN SOURCE</p>
 
-    <!-- Visual: sonar + instruments -->
-    <div class="hero-visual">
-      <div id="sub-wrap">
+    <h1 class="hero-title">
+      <span class="line"><span class="line-inner">SUB</span></span>
+      <span class="line"><span class="line-inner">MA</span></span>
+      <span class="line"><span class="line-inner">RINE</span></span>
+    </h1>
 
-        <!-- Instrument panels -->
-        <div class="instrument-panel panel-tl">
-          <div class="panel-label">DEPTH</div>
-          <div class="panel-value" id="val-depth">0</div>
-          <div class="panel-unit">METERS</div>
-        </div>
-        <div class="instrument-panel panel-tr">
-          <div class="panel-label">HEADING</div>
-          <div class="panel-value" id="val-heading">247</div>
-          <div class="panel-unit">DEGREES</div>
-        </div>
-        <div class="instrument-panel panel-bl">
-          <div class="panel-label">SPEED</div>
-          <div class="panel-value" id="val-speed">8.2</div>
-          <div class="panel-unit">KNOTS</div>
-        </div>
-        <div class="instrument-panel panel-br">
-          <div class="panel-label">PRESSURE</div>
-          <div class="panel-value" id="val-pressure">1.0</div>
-          <div class="panel-unit">ATM</div>
-        </div>
+    <p class="hero-year">2026 — 2036</p>
 
-        <!-- Sonar SVG -->
-        <svg id="sonar-display" viewBox="0 0 400 400">
-          <defs>
-            <radialGradient id="sonarGrad" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="rgba(0,212,255,0.03)"/>
-              <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-            </radialGradient>
-            <filter id="glow-filter">
-              <feGaussianBlur stdDeviation="2" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
+    <p class="hero-mission">A vessel that explores, cleans, and thinks. Open source. Built to save oceans.</p>
 
-          <!-- Background fill -->
-          <circle cx="200" cy="200" r="190" fill="url(#sonarGrad)"/>
-
-          <!-- Range rings -->
-          <circle cx="200" cy="200" r="50" fill="none" stroke="rgba(0,212,255,0.06)" stroke-width="1"/>
-          <circle cx="200" cy="200" r="100" fill="none" stroke="rgba(0,212,255,0.06)" stroke-width="1"/>
-          <circle cx="200" cy="200" r="150" fill="none" stroke="rgba(0,212,255,0.06)" stroke-width="1"/>
-          <circle cx="200" cy="200" r="190" fill="none" stroke="rgba(0,212,255,0.1)" stroke-width="1"/>
-
-          <!-- Crosshairs -->
-          <line x1="200" y1="10" x2="200" y2="390" stroke="rgba(0,212,255,0.05)" stroke-width="1"/>
-          <line x1="10" y1="200" x2="390" y2="200" stroke="rgba(0,212,255,0.05)" stroke-width="1"/>
-          <line x1="55" y1="55" x2="345" y2="345" stroke="rgba(0,212,255,0.03)" stroke-width="1"/>
-          <line x1="345" y1="55" x2="55" y2="345" stroke="rgba(0,212,255,0.03)" stroke-width="1"/>
-
-          <!-- Submarine at center -->
-          <g transform="translate(200,200)" filter="url(#glow-filter)">
-            <!-- Hull -->
-            <ellipse cx="0" cy="0" rx="30" ry="12" fill="#051a2e" stroke="rgba(0,212,255,0.4)" stroke-width="1"/>
-            <!-- Conning tower -->
-            <rect x="-8" y="-20" width="16" height="12" rx="2" fill="#041525" stroke="rgba(0,212,255,0.3)" stroke-width="0.8"/>
-            <!-- Periscope -->
-            <line x1="0" y1="-20" x2="0" y2="-28" stroke="rgba(0,212,255,0.5)" stroke-width="1.2"/>
-            <!-- Propeller -->
-            <g id="prop-sonar">
-              <line x1="36" y1="-6" x2="36" y2="6" stroke="rgba(0,212,255,0.4)" stroke-width="2" stroke-linecap="round"/>
-              <line x1="30" y1="0" x2="42" y2="0" stroke="rgba(0,212,255,0.4)" stroke-width="2" stroke-linecap="round"/>
-            </g>
-            <!-- Portholes -->
-            <circle cx="-10" cy="0" r="3" fill="#021020" stroke="rgba(0,212,255,0.3)" stroke-width="0.8"/>
-            <circle cx="0" cy="0" r="3" fill="#021020" stroke="rgba(0,212,255,0.3)" stroke-width="0.8"/>
-            <circle cx="10" cy="0" r="3" fill="#021020" stroke="rgba(0,212,255,0.3)" stroke-width="0.8"/>
-          </g>
-
-          <!-- Sweep line -->
-          <g id="sweep-group" transform-origin="200 200">
-            <line id="sweep-line" x1="200" y1="200" x2="390" y2="200"
-              stroke="rgba(0,212,255,0.7)" stroke-width="1.5"
-              stroke-linecap="round"/>
-            <!-- Sweep trail -->
-            <path id="sweep-trail" fill="none"
-              stroke="rgba(0,212,255,0.08)" stroke-width="40"/>
-          </g>
-
-          <!-- Ping targets -->
-          <g id="ping-targets"></g>
-
-          <!-- Range labels -->
-          <text x="204" y="155" fill="rgba(0,212,255,0.2)" font-family="Courier New" font-size="7">50</text>
-          <text x="204" y="105" fill="rgba(0,212,255,0.2)" font-family="Courier New" font-size="7">100</text>
-          <text x="204" y="55" fill="rgba(0,212,255,0.2)" font-family="Courier New" font-size="7">150</text>
-
-          <!-- Status text -->
-          <text x="20" y="385" fill="rgba(0,212,255,0.25)" font-family="Courier New" font-size="8" letter-spacing="2">ACTIVE SONAR</text>
-          <text x="280" y="385" fill="rgba(0,212,255,0.25)" font-family="Courier New" font-size="8">2026-03-16</text>
-        </svg>
-      </div>
+    <div class="hero-cta-row">
+      <a href="https://github.com/dontriskit/submarine" class="btn btn-glow">⭐ GitHub</a>
+      <a href="#mission" class="btn btn-outline">Explore</a>
     </div>
+  </div>
 
-    <!-- Text side -->
-    <div class="hero-text">
-      <p class="hero-eyebrow">SUBMARINE PROJECT — OS-1</p>
-      <h1 class="hero-title">
-        <span class="line"><span class="line-inner">BY 2036</span></span>
-        <span class="line"><span class="line-inner">I'LL BUILD</span></span>
-        <span class="line"><span class="line-inner" style="color:var(--glow);text-shadow:0 0 40px rgba(0,212,255,0.5)">A SUB.</span></span>
-      </h1>
-      <p class="hero-desc">
-        A vessel that explores, rescues, cleans, and thinks for itself.
-        Open source. AI-controlled. Multi-agent swarm architecture.
-        Built to bridge continents and save oceans.
-      </p>
-      <div class="hero-cta-row">
-        <a href="https://github.com/dontriskit/submarine" class="btn btn-glow">⭐ Star on GitHub</a>
-        <a href="#architecture" class="btn btn-outline">View Architecture</a>
-      </div>
-      <div class="hero-status">
-        <div class="status-item">
-          <div class="status-label">STATUS</div>
-          <div class="status-val">PROTOTYPE</div>
-        </div>
-        <div class="status-item">
-          <div class="status-label">AGENTS</div>
-          <div class="status-val">6 ARMS</div>
-        </div>
-        <div class="status-item">
-          <div class="status-label">LICENSE</div>
-          <div class="status-val">MIT</div>
-        </div>
-        <div class="status-item">
-          <div class="status-label">PLATFORM</div>
-          <div class="status-val">ARM64</div>
-        </div>
-      </div>
-    </div>
-
+  <div class="hero-scroll">
+    <div class="hero-scroll-label">Scroll</div>
+    <div class="hero-scroll-line"><div class="hero-scroll-fill" id="scroll-fill"></div></div>
   </div>
 </section>
 
@@ -1459,142 +1348,134 @@ setTimeout(() => {
 }, 1800);
 
 // ===========================
+// HERO DEPTH CANVAS
+// ===========================
+const hdc = document.getElementById('hero-depth-canvas');
+const hdctx = hdc.getContext('2d');
+let hdf = 0;
+
+function resizeHeroCanvas() {
+  hdc.width = window.innerWidth;
+  hdc.height = window.innerHeight;
+}
+
+function renderHeroDepth() {
+  hdf++;
+  const W2 = hdc.width, H2 = hdc.height;
+  hdctx.clearRect(0, 0, W2, H2);
+
+  // Deep, still water — very slow movement
+  const g = hdctx.createRadialGradient(W2 * 0.5, H2 * 0.3, 0, W2 * 0.5, H2 * 0.5, W2 * 0.8);
+  g.addColorStop(0, 'rgba(0,25,45,0.6)');
+  g.addColorStop(0.4, 'rgba(0,10,25,0.4)');
+  g.addColorStop(1, 'rgba(0,0,5,0.9)');
+  hdctx.fillStyle = g;
+  hdctx.fillRect(0, 0, W2, H2);
+
+  // Single slow light column from above — barely visible
+  const lx = W2 * 0.5 + Math.sin(hdf * 0.003) * W2 * 0.05;
+  const lg = hdctx.createLinearGradient(lx - W2 * 0.15, 0, lx + W2 * 0.15, H2 * 0.8);
+  lg.addColorStop(0, 'rgba(0,120,180,0.06)');
+  lg.addColorStop(0.5, 'rgba(0,80,140,0.02)');
+  lg.addColorStop(1, 'rgba(0,0,0,0)');
+  hdctx.beginPath();
+  hdctx.moveTo(lx - W2 * 0.2, 0);
+  hdctx.lineTo(lx + W2 * 0.2, 0);
+  hdctx.lineTo(lx + W2 * 0.05, H2 * 0.8);
+  hdctx.lineTo(lx - W2 * 0.05, H2 * 0.8);
+  hdctx.fillStyle = lg;
+  hdctx.fill();
+
+  // A few slow-drifting particles — barely perceptible
+  if (!hdc._pts) {
+    hdc._pts = Array.from({ length: 30 }, () => ({
+      x: Math.random() * W2, y: Math.random() * H2,
+      r: Math.random() * 0.8 + 0.2,
+      vx: (Math.random() - 0.5) * 0.08,
+      vy: (Math.random() - 0.5) * 0.04,
+      p: Math.random() * Math.PI * 2,
+      a: Math.random() * 0.15 + 0.02
+    }));
+  }
+  hdc._pts.forEach(p => {
+    p.x += p.vx; p.y += p.vy; p.p += 0.008;
+    if (p.x < 0) p.x = W2; if (p.x > W2) p.x = 0;
+    if (p.y < 0) p.y = H2; if (p.y > H2) p.y = 0;
+    const a = p.a * (0.4 + 0.6 * Math.sin(p.p));
+    hdctx.beginPath();
+    hdctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    hdctx.fillStyle = `rgba(0,180,220,${a})`;
+    hdctx.fill();
+  });
+
+  requestAnimationFrame(renderHeroDepth);
+}
+
+window.addEventListener('resize', resizeHeroCanvas);
+resizeHeroCanvas();
+renderHeroDepth();
+
+// ===========================
 // HERO ANIMATIONS
 // ===========================
 function startHero() {
-  // Reveal main
-  anime({ targets: '#main', opacity: 1, duration: 300, easing: 'easeOutQuad' });
+  anime({ targets: '#main', opacity: 1, duration: 600, easing: 'easeOutQuad' });
 
-  // Title lines
+  // Eyebrow fades in first, slowly
+  anime({
+    targets: '.hero-eyebrow',
+    opacity: [0, 1],
+    duration: 2000,
+    delay: 300,
+    easing: 'easeOutQuad'
+  });
+
+  // Title: each line rises from below, staggered, slow
   anime({
     targets: '.hero-title .line-inner',
-    translateY: ['110%', '0%'],
-    duration: 1000,
-    delay: anime.stagger(120, { start: 200 }),
+    translateY: ['105%', '0%'],
+    duration: 1800,
+    delay: anime.stagger(200, { start: 600 }),
     easing: 'easeOutExpo'
   });
 
-  // Other hero elements
+  // Year + mission statement — very slow fade
   anime({
-    targets: ['.hero-eyebrow', '.hero-desc', '.hero-cta-row', '.hero-status'],
+    targets: ['.hero-year', '.hero-mission'],
     opacity: [0, 1],
-    translateY: [20, 0],
-    duration: 800,
-    delay: anime.stagger(150, { start: 600 }),
-    easing: 'easeOutExpo'
+    duration: 2000,
+    delay: anime.stagger(400, { start: 2000 }),
+    easing: 'easeOutQuad'
   });
 
-  // Sonar sweep
-  startSonar();
-
-  // Instruments
-  startInstruments();
-
-  // Propeller
+  // CTA — last, subtle
   anime({
-    targets: '#prop-sonar',
-    rotate: 360,
-    duration: 1400,
-    easing: 'linear',
+    targets: '.hero-cta-row',
+    opacity: [0, 1],
+    translateY: [10, 0],
+    duration: 1200,
+    delay: 3200,
+    easing: 'easeOutQuad'
+  });
+
+  // Scroll indicator
+  anime({
+    targets: '.hero-scroll',
+    opacity: [0, 1],
+    duration: 1000,
+    delay: 4000,
+    easing: 'easeOutQuad'
+  });
+
+  // Scroll fill loop
+  anime({
+    targets: '#scroll-fill',
+    translateY: ['-100%', '100%'],
+    duration: 2000,
+    delay: 4200,
     loop: true,
-    transformOrigin: '36px 0px'
+    easing: 'easeInOutQuad'
   });
-}
-
-// ===========================
-// SONAR
-// ===========================
-let sweepAngle = 0;
-const pingTargets = [];
-
-function startSonar() {
-  // Random pings
-  for (let i = 0; i < 6; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const dist = 60 + Math.random() * 120;
-    pingTargets.push({
-      x: 200 + Math.cos(angle) * dist,
-      y: 200 + Math.sin(angle) * dist,
-      a: angle,
-      dist,
-      active: false
-    });
-  }
-  renderPings();
-  rotateSweep();
-}
-
-function rotateSweep() {
-  anime({
-    targets: { angle: sweepAngle },
-    angle: sweepAngle + 360,
-    duration: 4000,
-    easing: 'linear',
-    loop: true,
-    update: (anim) => {
-      const a = anim.animations[0].currentValue * Math.PI / 180;
-      sweepAngle = anim.animations[0].currentValue;
-      const endX = 200 + Math.cos(a) * 190;
-      const endY = 200 + Math.sin(a) * 190;
-      document.getElementById('sweep-line').setAttribute('x2', endX);
-      document.getElementById('sweep-line').setAttribute('y2', endY);
-
-      // Activate pings when sweep passes them
-      pingTargets.forEach(p => {
-        const diff = ((a - p.a) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
-        if (diff < 0.15) {
-          p.active = true;
-          p.alpha = 1;
-          animatePing(p);
-        }
-      });
-    }
-  });
-}
-
-function animatePing(p) {
-  anime({
-    targets: p,
-    alpha: [1, 0],
-    duration: 3000,
-    easing: 'easeOutQuad',
-    update: renderPings
-  });
-}
-
-function renderPings() {
-  const g = document.getElementById('ping-targets');
-  g.innerHTML = '';
-  pingTargets.forEach(p => {
-    if (p.alpha > 0.01) {
-      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      c.setAttribute('cx', p.x);
-      c.setAttribute('cy', p.y);
-      c.setAttribute('r', '5');
-      c.setAttribute('fill', `rgba(0,255,204,${p.alpha * 0.8})`);
-      c.setAttribute('filter', 'url(#glow-filter)');
-      g.appendChild(c);
-    }
-  });
-}
-
-// ===========================
-// INSTRUMENTS
-// ===========================
-function startInstruments() {
-  let depth = 0, heading = 247, speed = 8.2, pressure = 1.0;
-
-  setInterval(() => {
-    depth = Math.min(depth + Math.random() * 15, 4000);
-    heading = (heading + (Math.random() - 0.5) * 3) % 360;
-    speed = Math.max(0, Math.min(25, speed + (Math.random() - 0.5) * 0.3));
-    pressure = 1 + depth / 1000 * 0.1;
-
-    document.getElementById('val-depth').textContent = Math.round(depth);
-    document.getElementById('val-heading').textContent = Math.round(heading);
-    document.getElementById('val-speed').textContent = speed.toFixed(1);
-    document.getElementById('val-pressure').textContent = pressure.toFixed(1);
-  }, 300);
 }
 
 // ===========================
@@ -1807,13 +1688,9 @@ const ctaObs = new IntersectionObserver((entries) => {
 
 ctaObs.observe(document.getElementById('cta'));
 
-// ===========================
-// DEPTH SCROLL COUNTER
-// ===========================
+// Depth scroll — no longer displayed in hero, just drives ocean canvas darkness
 window.addEventListener('scroll', () => {
-  const pct = window.scrollY / Math.max(1, document.body.scrollHeight - window.innerHeight);
-  document.getElementById('val-depth').textContent = Math.round(pct * 4000);
-  document.getElementById('val-pressure').textContent = (1 + pct * 400).toFixed(1);
+  // ocean canvas uses scrollY via renderOcean already
 });
 </script>
 </body>
