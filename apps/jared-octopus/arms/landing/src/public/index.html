@@ -272,7 +272,7 @@
           <div class="arm-num-badge">ARM 01</div>
           <div class="arm-dot"></div>
         </div>
-        <h3>Antenna Positioning</h3>
+        <h3><a href="arm-01.html" style="color:inherit;text-decoration:none;" class="arm-link">Antenna Positioning →</a></h3>
         <div class="arm-tagline">Physical world interface</div>
         <p class="arm-desc">Controls servo motors and stepper drivers to physically rotate and position the antenna array. Executes swap sequences, validates mechanical confirmation via encoder feedback, and reports positioning errors upstream.</p>
         <ul class="arm-specs">
@@ -289,7 +289,7 @@
           <div class="arm-num-badge">ARM 02</div>
           <div class="arm-dot"></div>
         </div>
-        <h3>Signal Acquisition</h3>
+        <h3><a href="arm-02.html" style="color:inherit;text-decoration:none;" class="arm-link">Signal Acquisition →</a></h3>
         <div class="arm-tagline">Eyes on the sky</div>
         <p class="arm-desc">Drives the SDR hardware to capture raw IQ samples at a target frequency. Runs a real-time FFT pipeline to extract power spectral density. Knows when a signal is worth logging vs. discarding. Streams findings live to the data logger.</p>
         <ul class="arm-specs">
@@ -306,7 +306,7 @@
           <div class="arm-num-badge">ARM 03</div>
           <div class="arm-dot"></div>
         </div>
-        <h3>Power Management</h3>
+        <h3><a href="arm-03.html" style="color:inherit;text-decoration:none;" class="arm-link">Power Management →</a></h3>
         <div class="arm-tagline">Keep the lights on</div>
         <p class="arm-desc">Monitors current draw on every rail. Maintains an energy budget across all active arms. When the budget is tight, it throttles non-critical arms rather than hard-cutting. Reports thermal state and flags anomalies before they become failures.</p>
         <ul class="arm-specs">
@@ -323,7 +323,7 @@
           <div class="arm-num-badge">ARM 04</div>
           <div class="arm-dot"></div>
         </div>
-        <h3>Data & Memory</h3>
+        <h3><a href="arm-04.html" style="color:inherit;text-decoration:none;" class="arm-link">Data & Memory →</a></h3>
         <div class="arm-tagline">Nothing is forgotten</div>
         <p class="arm-desc">Persists every observation: raw IQ samples, spectral summaries, timestamps, antenna position, power state, and agent reasoning traces. Provides a query interface that the head uses to build context before issuing new directives. Manages storage lifecycle.</p>
         <ul class="arm-specs">
@@ -340,7 +340,7 @@
           <div class="arm-num-badge">ARM 05</div>
           <div class="arm-dot dim"></div>
         </div>
-        <h3>Calibration</h3>
+        <h3><a href="arm-05.html" style="color:inherit;text-decoration:none;" class="arm-link">Calibration →</a></h3>
         <div class="arm-tagline">Science needs ground truth</div>
         <p class="arm-desc">Runs periodic noise floor measurements, gain curve sweeps, and baseline drift corrections. Injects known reference signals to validate the signal path end-to-end. Publishes calibration deltas that arm-02 applies before each observation session.</p>
         <ul class="arm-specs">
@@ -357,7 +357,7 @@
           <div class="arm-num-badge">ARM 06</div>
           <div class="arm-dot dim"></div>
         </div>
-        <h3>Comms & Uplink</h3>
+        <h3><a href="arm-06.html" style="color:inherit;text-decoration:none;" class="arm-link">Comms & Uplink →</a></h3>
         <div class="arm-tagline">The submarine surfaces</div>
         <p class="arm-desc">Packages observation summaries and anomaly reports for uplink. Receives new mission directives from external operators or other submarine nodes. Acts as the network boundary — everything inbound and outbound flows through here. Supports peer-to-peer between submarine units.</p>
         <ul class="arm-specs">

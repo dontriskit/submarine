@@ -1,0 +1,162 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Arm 04 — Data & Memory · Submarine</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>:root{--ink:#060a0f;--white:#f0f4f8;--primary:#e8edf2;--secondary:#adbecf;--muted:#6b8499;--accent:#4db8e8;--accent2:#7dd3f0;--line:rgba(240,244,248,0.08);--serif:'DM Serif Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}html{font-size:18px;scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--primary);font-family:var(--sans);font-weight:300;line-height:1.75;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+.skip{position:absolute;top:-100%;left:1rem;background:var(--accent);color:var(--ink);padding:.5rem 1rem;font-weight:500;z-index:9999;border-radius:2px;}.skip:focus{top:1rem;}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#loader{position:fixed;inset:0;z-index:999;background:var(--ink);display:flex;align-items:center;justify-content:center;}
+#loader-word{font-family:var(--serif);font-size:clamp(1.5rem,4vw,2.8rem);color:rgba(240,244,248,0.07);letter-spacing:.2em;}
+#main{position:relative;z-index:1;opacity:0;}
+section{padding:clamp(4.5rem,9vw,8rem) clamp(1.5rem,7vw,6rem);position:relative;}
+.wrap{max-width:1100px;margin:0 auto;}
+section+section::before{content:'';display:block;position:absolute;top:0;left:clamp(1.5rem,7vw,6rem);right:clamp(1.5rem,7vw,6rem);height:1px;background:var(--line);}
+.eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:2rem;opacity:0;}
+h1{font-family:var(--serif);font-size:clamp(3.5rem,10vw,9rem);font-weight:400;line-height:.9;letter-spacing:-.02em;color:var(--white);}
+h2{font-family:var(--serif);font-size:clamp(2rem,4vw,3.2rem);font-weight:400;line-height:1.08;color:var(--white);letter-spacing:-.01em;margin-bottom:1.5rem;}
+h3{font-family:var(--serif);font-size:clamp(1.3rem,2vw,1.6rem);font-weight:400;color:var(--white);line-height:1.2;margin-bottom:.5rem;}
+h4{font-size:1rem;font-weight:500;color:var(--white);margin-bottom:.4rem;}
+p{font-size:clamp(1rem,1.3vw,1.05rem);line-height:1.8;color:var(--secondary);}
+.lead{font-size:clamp(1.05rem,1.5vw,1.15rem);line-height:1.85;color:var(--secondary);max-width:600px;margin-bottom:2.5rem;opacity:0;}
+.reveal{opacity:0;}
+a{color:var(--accent);text-underline-offset:3px;transition:color .3s;}a:hover{color:var(--white);}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px;}
+.btn{display:inline-block;font-size:.78rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--secondary);border-bottom:1px solid rgba(173,190,207,.2);padding-bottom:2px;transition:color .3s,border-color .3s;}
+.btn.primary{color:var(--accent);border-color:rgba(77,184,232,.35);}
+.top-nav{position:relative;z-index:2;padding:1.8rem clamp(1.5rem,7vw,6rem);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--line);}
+.nav-home{font-size:.72rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .3s;}.nav-home:hover{color:var(--secondary);}
+.nav-arms{display:flex;gap:1.5rem;}.nav-arm{font-size:.65rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .3s;}.nav-arm:hover{color:var(--secondary);}.nav-arm.active{color:var(--accent);}
+#hero{min-height:70vh;display:flex;align-items:flex-end;padding-bottom:clamp(3.5rem,7vw,6rem);overflow:hidden;}
+#hero-canvas{position:absolute;inset:0;pointer-events:none;}
+.hero-content{position:relative;z-index:1;width:100%;}
+.h1-line{display:block;overflow:hidden;}.h1-inner{display:block;transform:translateY(110%);}
+.hero-meta{margin-top:2rem;opacity:0;display:flex;align-items:flex-end;gap:3rem;flex-wrap:wrap;}
+.hero-tagline{font-size:clamp(1rem,1.4vw,1.1rem);line-height:1.7;color:var(--secondary);max-width:480px;}
+.hero-num{font-family:var(--serif);font-size:clamp(5rem,12vw,10rem);color:rgba(240,244,248,0.04);line-height:1;margin-left:auto;letter-spacing:-.02em;user-select:none;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+.two-col-wide{display:grid;grid-template-columns:2fr 1fr;gap:5rem;align-items:start;}
+.block{margin-bottom:2.5rem;opacity:0;}.block h3{margin-bottom:.8rem;}.block p+p{margin-top:1rem;}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:2rem;border-top:1px solid var(--line);}
+.tool-card{padding:2rem 2rem 2rem 0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);opacity:0;}
+.tool-card:nth-child(2n){border-right:none;padding-right:0;padding-left:2rem;}.tool-card:nth-child(2n-1){padding-right:2rem;}
+.tool-card:nth-last-child(-n+2){border-bottom:none;}
+.tool-sig{font-family:monospace;font-size:.82rem;color:var(--accent);background:rgba(77,184,232,0.06);border:1px solid rgba(77,184,232,0.12);border-radius:3px;padding:.4rem .8rem;margin-bottom:1rem;display:inline-block;word-break:break-all;}
+.tool-desc{font-size:.9rem;line-height:1.8;color:var(--secondary);margin-bottom:1rem;}
+.tool-meta{font-size:.78rem;line-height:1.9;color:var(--muted);}.tool-meta strong{color:var(--secondary);font-weight:400;}
+.spec-list{list-style:none;margin-top:1.2rem;}.spec-list li{font-size:.9rem;line-height:1.9;color:var(--secondary);padding-left:1.2rem;position:relative;}.spec-list li::before{content:'—';position:absolute;left:0;color:rgba(107,132,153,.4);}.spec-list li strong{color:var(--white);font-weight:400;}
+.fail-list{margin-top:2rem;}.fail-item{display:grid;grid-template-columns:auto 1fr;gap:1.5rem;padding:1.5rem 0;border-bottom:1px solid var(--line);opacity:0;align-items:start;}.fail-item:last-child{border-bottom:none;}.fail-icon{font-size:.6rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);padding-top:.3rem;min-width:5rem;}.fail-body h4{margin-bottom:.3rem;}.fail-body p{font-size:.9rem;color:var(--secondary);}
+.integration-box{background:rgba(240,244,248,.02);border:1px solid var(--line);border-radius:4px;padding:2rem;margin-top:2rem;opacity:0;}.integration-box h4{margin-bottom:1.2rem;font-size:.72rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+.int-row{display:grid;grid-template-columns:7rem 1fr;gap:1.5rem;padding:.8rem 0;border-bottom:1px solid var(--line);}.int-row:last-child{border-bottom:none;}.int-label{font-size:.65rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}.int-val{font-size:.9rem;color:var(--secondary);line-height:1.7;}
+.pagination{display:flex;justify-content:space-between;align-items:center;padding:3rem clamp(1.5rem,7vw,6rem);border-top:1px solid var(--line);}
+.pag-item{text-decoration:none;}.pag-dir{font-size:.65rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}.pag-title{font-family:var(--serif);font-size:clamp(1.1rem,1.8vw,1.4rem);color:var(--white);}.pag-item:hover .pag-title{color:var(--accent);}
+footer{padding:2rem clamp(1.5rem,7vw,6rem);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;border-top:1px solid var(--line);}.fc{font-size:.75rem;color:var(--muted);}.fc a{color:var(--muted);text-decoration:underline;}.fc a:hover{color:var(--secondary);}
+@media(max-width:860px){.two-col,.two-col-wide{grid-template-columns:1fr;gap:3rem;}.tool-grid{grid-template-columns:1fr;}.tool-card{border-right:none;padding:2rem 0!important;border-bottom:1px solid var(--line);}.tool-card:last-child{border-bottom:none;}.hero-num{display:none;}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important;}.h1-inner{transform:none;}}</style></head><body>
+<a class="skip" href="#content">Skip to content</a>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="loader" aria-hidden="true"><div id="loader-word">Arm 04</div></div>
+<div id="main">
+<nav class="top-nav" aria-label="Site navigation"><a href="index.html" class="nav-home">← Submarine</a><div class="nav-arms"><a href="arm-01.html" class="nav-arm">01</a><a href="arm-02.html" class="nav-arm">02</a><a href="arm-03.html" class="nav-arm">03</a><a href="arm-04.html" class="nav-arm active" aria-current="page">04</a><a href="arm-05.html" class="nav-arm">05</a><a href="arm-06.html" class="nav-arm">06</a></div></nav>
+<section id="hero"><canvas id="hero-canvas" aria-hidden="true"></canvas><div class="wrap hero-content">
+<h1><span class="h1-line"><span class="h1-inner">Data &</span></span><span class="h1-line"><span class="h1-inner" style="padding-left:clamp(1.5rem,5vw,5rem)">Memory.</span></span></h1>
+<div class="hero-meta"><p class="hero-tagline">Arm 04 — Nothing is forgotten. Persists every observation, every power reading, every agent decision trace. The system's long-term memory and the head's context source.</p><div class="hero-num" aria-hidden="true">04</div></div>
+</div></section>
+<div id="content">
+<section><div class="wrap"><p class="eyebrow reveal">What it does</p><div class="two-col-wide"><div>
+<div class="block"><h3>Structured metadata and raw signal storage</h3>
+<p>Arm 04 operates a two-tier storage system. Structured observation metadata — frequency, timestamp, antenna ID, duration, noise floor, candidate signals, power state, calibration version — lives in a SQLite database with full-text search and indexed queries. Raw IQ sample files live on disk as GZIP-compressed binary blobs, referenced by their observation ID in the database.</p>
+<p>The separation matters. The head can query "show me all 1420 MHz observations from the last 7 days where the noise floor was below -100 dBm" without touching a single IQ file. IQ files are only loaded when arm 02 needs to re-process historical data — which is rare and deliberately slow to discourage doing it during active sessions.</p></div>
+<div class="block"><h3>The RFI mask and environmental baseline</h3>
+<p>Arm 04 is the custodian of the RFI mask — the frequency-domain map of known interference sources that arm 02 uses for threshold detection. The mask is updated after every observation session: arm 02 reports which bins were persistently elevated, and arm 04 merges them into the mask with a confidence score. Bins with high confidence (seen in &gt;80% of recent sessions) are hard-masked; bins with lower confidence are soft-masked and still reported but down-weighted.</p>
+<p>The calibration correction table from arm 05 is also stored here, versioned by timestamp. Each observation record references the calibration version that was active when it was captured, so historical data can be re-processed with updated corrections.</p></div>
+<div class="block"><h3>Query interface for the head</h3>
+<p>Before the head dispatches an observation directive, it typically queries arm 04 to understand what's been seen at that frequency before — noise floor history, previous candidates, RFI mask status, and the last calibration timestamp. This context shapes the head's decisions: if the noise floor has been creeping up over the last week, the head might request a calibration run before committing to a long observation.</p></div>
+</div><div>
+<p class="lead">The observatory's long-term memory. Arm 04 is what makes the system learn — every session informs the next.</p>
+<h4 style="color:var(--white);margin-bottom:1rem;">Status</h4>
+<ul class="spec-list">
+<li><strong>State:</strong> Active</li><li><strong>Database:</strong> SQLite 3.x</li>
+<li><strong>IQ storage:</strong> GZIP-compressed binary</li>
+<li><strong>Default retention:</strong> 30 days rolling</li>
+<li><strong>Compression ratio:</strong> ~3:1 on typical IQ data</li>
+<li><strong>Energy draw:</strong> &lt;5W (disk I/O only)</li>
+</ul></div></div></div></section>
+
+<section><div class="wrap"><p class="eyebrow reveal">Storage layout</p><div class="two-col">
+<div><h2 class="reveal">Schema.</h2>
+<div class="block"><h3>observations table</h3><ul class="spec-list">
+<li><strong>id</strong> — UUID, primary key</li>
+<li><strong>timestamp_ms</strong> — Unix ms, indexed</li>
+<li><strong>freq_mhz, bw_mhz</strong> — observation parameters</li>
+<li><strong>antenna_id</strong> — from arm 01 manifest</li>
+<li><strong>duration_sec, samples_captured</strong></li>
+<li><strong>noise_floor_dbm</strong> — from arm 02</li>
+<li><strong>cal_version</strong> — FK to calibrations table</li>
+<li><strong>iq_path</strong> — relative path to raw file (nullable)</li>
+<li><strong>flags</strong> — JSON: partial, cal_stale, rfi_events</li>
+</ul></div>
+<div class="block"><h3>candidates table</h3><ul class="spec-list">
+<li><strong>id, observation_id</strong> — FK to observations</li>
+<li><strong>freq_mhz, bandwidth_khz</strong></li>
+<li><strong>peak_dbm, snr_db</strong></li>
+<li><strong>confidence</strong> — 0.0–1.0 from arm 02</li>
+<li><strong>reviewed</strong> — bool, set by head after inspection</li>
+</ul></div></div>
+<div><h2 class="reveal" style="visibility:hidden;"></h2>
+<div class="block"><h3>rfi_mask table</h3><ul class="spec-list">
+<li><strong>freq_mhz</strong> — centre of masked bin</li>
+<li><strong>bandwidth_khz</strong> — width of mask</li>
+<li><strong>confidence</strong> — 0.0–1.0</li>
+<li><strong>first_seen_ms, last_seen_ms</strong></li>
+<li><strong>occurrence_count</strong></li>
+</ul></div>
+<div class="block"><h3>File layout</h3><ul class="spec-list">
+<li><strong>data/observations/</strong> — SQLite DB file</li>
+<li><strong>data/iq/YYYY-MM/</strong> — monthly IQ directories</li>
+<li><strong>data/iq/YYYY-MM/&lt;obs-id&gt;.iq.gz</strong> — raw files</li>
+<li><strong>data/cal/</strong> — calibration tables (JSON)</li>
+<li><strong>data/rfi/rfi-mask.json</strong> — current mask snapshot</li>
+</ul></div></div></div></div></section>
+
+<section><div class="wrap"><p class="eyebrow reveal">MCP Tools</p><h2 class="reveal">The interface.</h2><div class="tool-grid">
+<div class="tool-card"><div class="tool-sig">log(observation: Observation)</div><p class="tool-desc">Persist a completed observation record. Called by arm 02 (via head) at the end of every capture session. Writes metadata to SQLite and, if IQ data is attached, streams the compressed file to disk.</p><div class="tool-meta"><strong>Returns:</strong> <code style="color:var(--accent)">{ id: string, stored_bytes: int, iq_path: string|null }</code><br><strong>Example:</strong> <code style="color:var(--accent)">log({ freq_mhz: 1420.405, duration_sec: 60, ... })</code></div></div>
+<div class="tool-card"><div class="tool-sig">query(filter: QueryFilter, limit: int = 50)</div><p class="tool-desc">Query the observation database. Filter supports frequency range, time range, minimum SNR, antenna ID, and flag conditions. Used by the head before scheduling observations and by arm 06 when preparing uplink summaries.</p><div class="tool-meta"><strong>Returns:</strong> <code style="color:var(--accent)">Observation[]</code> (metadata only, no IQ)<br><strong>Example:</strong> <code style="color:var(--accent)">query({ freq_min: 1420, freq_max: 1421, since_ms: Date.now()-86400000 })</code></div></div>
+<div class="tool-card"><div class="tool-sig">get_rfi_mask(freq_min_mhz: float, freq_max_mhz: float)</div><p class="tool-desc">Return the current RFI mask entries within the given frequency range. Called by arm 02 on startup and after each observation session to load the latest mask state.</p><div class="tool-meta"><strong>Returns:</strong> <code style="color:var(--accent)">RFIMaskEntry[]</code><br><strong>Example:</strong> <code style="color:var(--accent)">get_rfi_mask(1400.0, 1450.0)</code></div></div>
+<div class="tool-card"><div class="tool-sig">update_rfi_mask(entries: RFIMaskEntry[])</div><p class="tool-desc">Merge new RFI observations into the mask. Called by arm 02 after each session. Arm 04 applies a confidence decay function to existing entries — bins not seen in recent sessions lose confidence and eventually get retired.</p><div class="tool-meta"><strong>Returns:</strong> <code style="color:var(--accent)">{ updated: int, added: int, retired: int }</code><br><strong>Example:</strong> <code style="color:var(--accent)">update_rfi_mask([{ freq_mhz: 1430.5, bandwidth_khz: 200, confidence: 0.9 }])</code></div></div>
+<div class="tool-card"><div class="tool-sig">get_context(freq_mhz: float, lookback_days: int = 7)</div><p class="tool-desc">Return a structured context summary for a given frequency — recent noise floor history, candidate signal count, RFI mask status, and last calibration age. This is what the head reads before scheduling an observation.</p><div class="tool-meta"><strong>Returns:</strong> <code style="color:var(--accent)">{ noise_floor_history: float[], candidate_count: int, rfi_masked: bool, cal_age_hours: float }</code></div></div>
+<div class="tool-card"><div class="tool-sig">prune(older_than_days: int = 30)</div><p class="tool-desc">Remove IQ files and observation records older than the retention threshold. Metadata-only records (no IQ file) are retained indefinitely. Called by a daily cron job triggered by the head.</p><div class="tool-meta"><strong>Returns:</strong> <code style="color:var(--accent)">{ records_removed: int, bytes_freed: int }</code><br><strong>Example:</strong> <code style="color:var(--accent)">prune(30)</code></div></div>
+</div></div></section>
+
+<section><div class="wrap"><p class="eyebrow reveal">Failure modes</p><h2 class="reveal">What breaks.<br>How it recovers.</h2><div class="fail-list">
+<div class="fail-item"><div class="fail-icon">disk full</div><div class="fail-body"><h4>Storage fills before scheduled pruning</h4><p>Arm 04 monitors available disk space and pre-emptively prunes when free space drops below 10%. If that's not enough, it stops accepting raw IQ files (metadata-only mode) and alerts the head. Observations continue but without raw data archival.</p></div></div>
+<div class="fail-item"><div class="fail-icon">DB corruption</div><div class="fail-body"><h4>SQLite integrity check fails</h4><p>Arm 04 attempts a VACUUM and integrity repair. If the database is unrecoverable, it renames the corrupted file, creates a fresh database, and alerts the head. Historical data is lost but current operations continue. IQ files on disk are unaffected.</p></div></div>
+<div class="fail-item"><div class="fail-icon">write failure</div><div class="fail-body"><h4>IQ file write fails mid-stream</h4><p>The partial file is deleted and the observation is logged with an <code style="color:var(--accent)">iq_failed</code> flag. Metadata is preserved. Arm 04 reports the failure to the head with disk health context (SMART status if available).</p></div></div>
+</div></div></section>
+
+<section><div class="wrap"><p class="eyebrow reveal">Integration</p><h2 class="reveal">How it fits.</h2>
+<div class="integration-box reveal"><h4>Integration contract</h4>
+<div class="int-row"><div class="int-label">Receives from</div><div class="int-val">Head: log requests (with observation data from arm 02), query requests, prune commands, RFI mask updates.</div></div>
+<div class="int-row"><div class="int-label">Reports to</div><div class="int-val">Head: query results, context summaries, storage health, fault events.</div></div>
+<div class="int-row"><div class="int-label">Loaded by</div><div class="int-val">Arm 02 (RFI mask, calibration table) and arm 05 (calibration history) — loaded at startup via head-mediated fetch, not direct arm-to-arm calls.</div></div>
+<div class="int-row"><div class="int-label">Produces</div><div class="int-val">Persistent observation archive. Query interface. RFI mask. Calibration version history. Context summaries for head scheduling.</div></div>
+</div></div></section>
+</div>
+<nav class="pagination" aria-label="Arm navigation">
+<a href="arm-03.html" class="pag-item"><div class="pag-dir">← Previous</div><div class="pag-title">Power Management</div></a>
+<a href="arm-05.html" class="pag-item" style="text-align:right"><div class="pag-dir">Next →</div><div class="pag-title">Calibration</div></a>
+</nav>
+<footer role="contentinfo"><div class="fc"><a href="https://github.com/dontriskit">@dontriskit</a> <span style="margin:0 .7rem;opacity:.3">·</span> Built with <a href="https://github.com/jaredtribe">Jared</a> (OS-1)</div><div class="fc"><a href="https://github.com/dontriskit/submarine/blob/main/LICENSE">MIT</a> <span style="margin:0 .7rem;opacity:.3">·</span> <a href="https://github.com/dontriskit/submarine">GitHub</a></div></footer>
+</div><script>const bg=document.getElementById('bg'),bgx=bg.getContext('2d');let bW,bH,bF=0,bPts=[];
+function bgResize(){bW=bg.width=window.innerWidth;bH=bg.height=window.innerHeight;bPts=Array.from({length:Math.floor(bW*bH/15000)},()=>({x:Math.random()*bW,y:Math.random()*bH,r:Math.random()*.85+.15,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.05,p:Math.random()*Math.PI*2,a:Math.random()*.1+.02}));}
+function bgRender(){bF++;bgx.clearRect(0,0,bW,bH);const g=bgx.createLinearGradient(0,0,0,bH);g.addColorStop(0,'rgba(0,6,14,.35)');g.addColorStop(1,'rgba(0,2,6,.6)');bgx.fillStyle=g;bgx.fillRect(0,0,bW,bH);const rx=bW*(.45+Math.sin(bF*.0007)*.05);const rg=bgx.createLinearGradient(rx,0,rx,bH*.5);rg.addColorStop(0,'rgba(0,100,160,.04)');rg.addColorStop(1,'rgba(0,0,0,0)');bgx.beginPath();bgx.moveTo(rx-bW*.09,0);bgx.lineTo(rx+bW*.09,0);bgx.lineTo(rx+bW*.022,bH*.5);bgx.lineTo(rx-bW*.022,bH*.5);bgx.fillStyle=rg;bgx.fill();bPts.forEach(p=>{p.x+=p.vx+Math.sin(bF*.001+p.p)*.06;p.y+=p.vy;p.p+=.009;if(p.x<0)p.x=bW;if(p.x>bW)p.x=0;if(p.y<0)p.y=bH;if(p.y>bH)p.y=0;bgx.beginPath();bgx.arc(p.x,p.y,p.r,0,Math.PI*2);bgx.fillStyle='rgba(0,170,210,'+(p.a*(.4+.6*Math.sin(p.p)))+')';bgx.fill();});requestAnimationFrame(bgRender);}
+window.addEventListener('resize',bgResize);bgResize();bgRender();
+const hc=document.getElementById('hero-canvas'),hx=hc.getContext('2d');let hF=0;
+function hResize(){hc.width=hc.offsetWidth||window.innerWidth;hc.height=hc.offsetHeight||window.innerHeight;}
+function hRender(){hF++;const W=hc.width,H=hc.height;hx.clearRect(0,0,W,H);const g=hx.createRadialGradient(W*.5,H*.25,0,W*.5,H*.6,W*.7);g.addColorStop(0,'rgba(0,18,36,.5)');g.addColorStop(.5,'rgba(0,7,16,.28)');g.addColorStop(1,'rgba(0,0,4,.82)');hx.fillStyle=g;hx.fillRect(0,0,W,H);requestAnimationFrame(hRender);}
+new ResizeObserver(hResize).observe(hc);hResize();hRender();
+anime({targets:'#loader-word',color:['rgba(240,244,248,0.07)','rgba(240,244,248,0.6)','rgba(240,244,248,0.07)'],duration:1600,easing:'easeInOutQuad',complete:()=>anime({targets:'#loader',opacity:0,duration:600,easing:'easeOutQuad',complete:()=>{document.getElementById('loader').style.display='none';anime({targets:'#main',opacity:1,duration:400,easing:'easeOutQuad'});anime({targets:'.h1-inner',translateY:['110%','0%'],duration:1700,delay:anime.stagger(170,{start:100}),easing:'easeOutExpo'});anime({targets:'.hero-meta',opacity:[0,1],translateY:[8,0],duration:1200,delay:1700,easing:'easeOutQuad'});}})});
+const obs=new IntersectionObserver((e)=>{e.forEach(en=>{if(!en.isIntersecting)return;anime({targets:en.target,opacity:[0,1],translateY:[16,0],duration:900,easing:'easeOutExpo'});obs.unobserve(en.target);});},{threshold:.07});
+document.querySelectorAll('.reveal,.block,.tool-card,.fail-item,.integration-box,.eyebrow,.lead').forEach(el=>obs.observe(el));</script></body></html>

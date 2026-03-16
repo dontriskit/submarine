@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Arm 06 — Comms & Uplink · Submarine</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+    :root{--ink:#060a0f;--white:#f0f4f8;--primary:#e8edf2;--secondary:#adbecf;--muted:#6b8499;--accent:#4db8e8;--accent2:#7dd3f0;--line:rgba(240,244,248,0.08);--serif:'DM Serif Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}html{font-size:18px;scroll-behavior:smooth;}
+    body{background:var(--ink);color:var(--primary);font-family:var(--sans);font-weight:300;line-height:1.75;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    .skip{position:absolute;top:-100%;left:1rem;background:var(--accent);color:var(--ink);padding:.5rem 1rem;font-weight:500;z-index:9999;border-radius:2px;}.skip:focus{top:1rem;}
+    #bg{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    #loader{position:fixed;inset:0;z-index:999;background:var(--ink);display:flex;align-items:center;justify-content:center;}
+    #loader-word{font-family:var(--serif);font-size:clamp(1.5rem,4vw,2.8rem);color:rgba(240,244,248,0.07);letter-spacing:.2em;}
+    #main{position:relative;z-index:1;opacity:0;}
+    section{padding:clamp(4.5rem,9vw,8rem) clamp(1.5rem,7vw,6rem);position:relative;}
+    .wrap{max-width:1100px;margin:0 auto;}
+    section+section::before{content:'';display:block;position:absolute;top:0;left:clamp(1.5rem,7vw,6rem);right:clamp(1.5rem,7vw,6rem);height:1px;background:var(--line);}
+    .eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:2rem;opacity:0;}
+    h1{font-family:var(--serif);font-size:clamp(3.5rem,10vw,9rem);font-weight:400;line-height:.9;letter-spacing:-.02em;color:var(--white);}
+    h2{font-family:var(--serif);font-size:clamp(2rem,4vw,3.2rem);font-weight:400;line-height:1.08;color:var(--white);letter-spacing:-.01em;margin-bottom:1.5rem;}
+    h3{font-family:var(--serif);font-size:clamp(1.3rem,2vw,1.6rem);font-weight:400;color:var(--white);line-height:1.2;margin-bottom:.5rem;}
+    h4{font-size:1rem;font-weight:500;color:var(--white);margin-bottom:.4rem;}
+    p{font-size:clamp(1rem,1.3vw,1.05rem);line-height:1.8;color:var(--secondary);}
+    .lead{font-size:clamp(1.05rem,1.5vw,1.15rem);line-height:1.85;color:var(--secondary);max-width:600px;margin-bottom:2.5rem;opacity:0;}
+    .reveal{opacity:0;}
+    a{color:var(--accent);text-underline-offset:3px;transition:color .3s;}a:hover{color:var(--white);}
+    a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px;}
+    .btn{display:inline-block;font-size:.78rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--secondary);border-bottom:1px solid rgba(173,190,207,.2);padding-bottom:2px;transition:color .3s,border-color .3s;}.btn.primary{color:var(--accent);border-color:rgba(77,184,232,.35);}
+    .top-nav{position:relative;z-index:2;padding:1.8rem clamp(1.5rem,7vw,6rem);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--line);}
+    .nav-home{font-size:.72rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .3s;}.nav-home:hover{color:var(--secondary);}
+    .nav-arms{display:flex;gap:1.5rem;}.nav-arm{font-size:.65rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .3s;}.nav-arm:hover{color:var(--secondary);}.nav-arm.active{color:var(--accent);}
+    #hero{min-height:70vh;display:flex;align-items:flex-end;padding-bottom:clamp(3.5rem,7vw,6rem);overflow:hidden;}
+    #hero-canvas{position:absolute;inset:0;pointer-events:none;}
+    .hero-content{position:relative;z-index:1;width:100%;}
+    .h1-line{display:block;overflow:hidden;}.h1-inner{display:block;transform:translateY(110%);}
+    .hero-meta{margin-top:2rem;opacity:0;display:flex;align-items:flex-end;gap:3rem;flex-wrap:wrap;}
+    .hero-tagline{font-size:clamp(1rem,1.4vw,1.1rem);line-height:1.7;color:var(--secondary);max-width:480px;}
+    .hero-num{font-family:var(--serif);font-size:clamp(5rem,12vw,10rem);color:rgba(240,244,248,0.04);line-height:1;margin-left:auto;letter-spacing:-.02em;user-select:none;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+    .two-col-wide{display:grid;grid-template-columns:2fr 1fr;gap:5rem;align-items:start;}
+    .block{margin-bottom:2.5rem;opacity:0;}.block h3{margin-bottom:.8rem;}.block p+p{margin-top:1rem;}
+    .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:2rem;border-top:1px solid var(--line);}
+    .tool-card{padding:2rem 2rem 2rem 0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);opacity:0;}
+    .tool-card:nth-child(2n){border-right:none;padding-right:0;padding-left:2rem;}.tool-card:nth-child(2n-1){padding-right:2rem;}
+    .tool-card:nth-last-child(-n+2){border-bottom:none;}
+    .tool-sig{font-family:monospace;font-size:.82rem;color:var(--accent);background:rgba(77,184,232,0.06);border:1px solid rgba(77,184,232,0.12);border-radius:3px;padding:.4rem .8rem;margin-bottom:1rem;display:inline-block;word-break:break-all;}
+    .tool-desc{font-size:.9rem;line-height:1.8;color:var(--secondary);margin-bottom:1rem;}
+    .tool-meta{font-size:.78rem;line-height:1.9;color:var(--muted);}.tool-meta strong{color:var(--secondary);font-weight:400;}
+    .spec-list{list-style:none;margin-top:1.2rem;}.spec-list li{font-size:.9rem;line-height:1.9;color:var(--secondary);padding-left:1.2rem;position:relative;}.spec-list li::before{content:'—';position:absolute;left:0;color:rgba(107,132,153,.4);}.spec-list li strong{color:var(--white);font-weight:400;}
+    .fail-list{margin-top:2rem;}.fail-item{display:grid;grid-template-columns:auto 1fr;gap:1.5rem;padding:1.5rem 0;border-bottom:1px solid var(--line);opacity:0;align-items:start;}.fail-item:last-child{border-bottom:none;}.fail-icon{font-size:.6rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);padding-top:.3rem;min-width:5rem;}.fail-body h4{margin-bottom:.3rem;}.fail-body p{font-size:.9rem;color:var(--secondary);}
+    .integration-box{background:rgba(240,244,248,.02);border:1px solid var(--line);border-radius:4px;padding:2rem;margin-top:2rem;opacity:0;}.integration-box h4{margin-bottom:1.2rem;font-size:.72rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+    .int-row{display:grid;grid-template-columns:7rem 1fr;gap:1.5rem;padding:.8rem 0;border-bottom:1px solid var(--line);}.int-row:last-child{border-bottom:none;}.int-label{font-size:.65rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}.int-val{font-size:.9rem;color:var(--secondary);line-height:1.7;}
+    .pagination{display:flex;justify-content:space-between;align-items:center;padding:3rem clamp(1.5rem,7vw,6rem);border-top:1px solid var(--line);}
+    .pag-item{text-decoration:none;}.pag-dir{font-size:.65rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}.pag-title{font-family:var(--serif);font-size:clamp(1.1rem,1.8vw,1.4rem);color:var(--white);}.pag-item:hover .pag-title{color:var(--accent);}
+    footer{padding:2rem clamp(1.5rem,7vw,6rem);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;border-top:1px solid var(--line);}.fc{font-size:.75rem;color:var(--muted);}.fc a{color:var(--muted);text-decoration:underline;}.fc a:hover{color:var(--secondary);}
+    @media(max-width:860px){.two-col,.two-col-wide{grid-template-columns:1fr;gap:3rem;}.tool-grid{grid-template-columns:1fr;}.tool-card{border-right:none;padding:2rem 0!important;border-bottom:1px solid var(--line);}.tool-card:last-child{border-bottom:none;}.hero-num{display:none;}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important;}.h1-inner{transform:none;}}
+</style></head><body>
+<a class="skip" href="#content">Skip to content</a>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="loader" aria-hidden="true"><div id="loader-word">Arm 06</div></div>
+<div id="main">
+<nav class="top-nav" aria-label="Site navigation">
+  <a href="index.html" class="nav-home">← Submarine</a>
+  <div class="nav-arms"><a href="arm-01.html" class="nav-arm">01</a><a href="arm-02.html" class="nav-arm">02</a><a href="arm-03.html" class="nav-arm">03</a><a href="arm-04.html" class="nav-arm">04</a><a href="arm-05.html" class="nav-arm">05</a><a href="arm-06.html" class="nav-arm active" aria-current="page">06</a></div>
+</nav>
+<section id="hero"><canvas id="hero-canvas" aria-hidden="true"></canvas><div class="wrap hero-content">
+<h1><span class="h1-line"><span class="h1-inner">Comms &</span></span><span class="h1-line"><span class="h1-inner" style="padding-left:clamp(1.5rem,5vw,5rem)">Uplink.</span></span></h1>
+<div class="hero-meta"><p class="hero-tagline">Arm 06 — The submarine surfaces. Every byte that leaves the system and every directive that arrives passes through here. The network boundary of the entire swarm.</p><div class="hero-num" aria-hidden="true">06</div></div>
+</div></section>
+<div id="content">
+<section><div class="wrap"><p class="eyebrow reveal">What it does</p><div class="two-col-wide"><div>
+<div class="block"><h3>Outbound uplink and session summaries</h3>
+<p>After each observation session, arm 06 packages a structured summary — session metadata, candidate signals, power telemetry, calibration status, and any anomalies — and transmits it to the configured operator endpoint via HTTP/2. For low-bandwidth situations (cellular, satellite), it publishes a lightweight MQTT telemetry stream instead, keeping the packet size under 1KB. The full summary is queued locally and retried on reconnect.</p>
+<p>The arm applies a configurable privacy filter before uplink. By default, raw IQ data never leaves the device — only processed summaries are transmitted. Candidate signal data is transmitted with a configurable precision floor (frequency rounded to the nearest configurable granularity) to avoid leaking precise timing or position information inadvertently.</p></div>
+<div class="block"><h3>Inbound directives and fleet coordination</h3>
+<p>Arm 06 polls the operator endpoint for new directives on a configurable interval (default 60s, minimum 10s). Directives are JSON objects with a type (observation request, configuration update, firmware update, calibration request) and a priority level. High-priority directives wake the head immediately; normal priority directives are queued for the next head scheduling cycle.</p>
+<p>For peer submarine coordination, arm 06 supports a lightweight peer discovery protocol. Multiple submarine units on the same network can share RFI mask data, coordinate frequency assignments to avoid redundant observations, and relay anomaly alerts to each other. Peer communication uses the same MCP-over-TCP transport as head-to-arm communication, so no additional protocol stack is needed.</p></div>
+<div class="block"><h3>Offline resilience</h3>
+<p>Network connectivity is optional, not required. When the uplink is unavailable, arm 06 queues all outbound summaries to a local SQLite store with a configurable maximum queue depth (default 7 days of summaries). When connectivity is restored, it transmits the backlog in chronological order at a rate that doesn't saturate the network connection. Inbound directives are fetched on reconnect before the backlog is transmitted, so urgent directives are never delayed by a large outbound queue.</p></div>
+</div><div>
+<p class="lead">The boundary between the submarine and the world. Every communication in and out passes through arm 06.</p>
+<h4 style="color:var(--white);margin-bottom:1rem;">Status</h4>
+<ul class="spec-list">
+<li><strong>State:</strong> Standby (event-driven)</li><li><strong>Primary protocol:</strong> HTTP/2 (TLS 1.3)</li>
+<li><strong>Telemetry protocol:</strong> MQTT 5.0</li><li><strong>Offline queue:</strong> SQLite, 7-day default</li>
+<li><strong>Directive poll:</strong> 60s default, 10s minimum</li>
+<li><strong>Energy draw:</strong> &lt;3W (network I/O only)</li>
+</ul></div></div></div></section>
+
+<section><div class="wrap"><p class="eyebrow reveal">MCP Tools</p><h2 class="reveal">The interface.</h2><div class="tool-grid">
+<div class="tool-card"><div class="tool-sig">uplink(summary: SessionSummary, priority: string = "normal")</div><p class="tool-desc">Transmit a session summary to the operator endpoint. If the network is unavailable, the summary is queued locally. Priority "high" triggers an immediate retry loop; "normal" waits for the next scheduled transmission window.</p><div class="tool-meta"><strong>Returns:</strong> <code style="color:var(--accent)">{ ok: bool, queued: bool, queue_depth: int, transmitted_bytes: int }</code><br><strong>Example:</strong> <code style="color:var(--accent)">uplink({ session_id, candidates, power_summary, ... }, "normal")</code></div></div>
+<div class="tool-card"><div class="tool-sig">receive_directive()</div><p class="tool-desc">Poll the operator endpoint for pending directives. Returns all queued directives sorted by priority. Called by the head on a configurable schedule and on reconnect events.</p><div class="tool-meta"><strong>Returns:</strong> <code style="color:var(--accent)">Directive[]</code> — each with <code style="color:var(--accent)">{ type, priority, payload, issued_at_ms }</code><br><strong>Example:</strong> <code style="color:var(--accent)">receive_directive()</code><br><strong>Latency:</strong> network round-trip</div></div>
+<div class="tool-card"><div class="tool-sig">get_network_status()</div><p class="tool-desc">Return current network connectivity state, queue depth, last successful uplink timestamp, and next scheduled transmission. Used by the head to decide whether to delay non-critical uplinks.</p><div class="tool-meta"><strong>Returns:</strong> <code style="color:var(--accent)">{ connected: bool, queue_depth: int, last_uplink_ms: int, next_uplink_ms: int }</code></div></div>
+<div class="tool-card"><div class="tool-sig">peer_announce()</div><p class="tool-desc">Broadcast a presence announcement on the local network for peer submarine discovery. Returns a list of peers that responded, with their current observation status and RFI mask version.</p><div class="tool-meta"><strong>Returns:</strong> <code style="color:var(--accent)">Peer[]</code> — each with <code style="color:var(--accent)">{ id, address, active_freq_mhz, rfi_mask_version }</code><br><strong>Example:</strong> <code style="color:var(--accent)">peer_announce()</code></div></div>
+</div></div></section>
+
+<section><div class="wrap"><p class="eyebrow reveal">Failure modes</p><h2 class="reveal">What breaks.<br>How it recovers.</h2><div class="fail-list">
+<div class="fail-item"><div class="fail-icon">network down</div><div class="fail-body"><h4>Uplink endpoint unreachable</h4><p>All summaries are queued locally. Arm 06 backs off exponentially (10s, 30s, 2min, 10min) to avoid hammering a flaky connection. The head is notified on the first failure and on reconnect. Science operations are not interrupted — the submarine operates fully autonomously offline.</p></div></div>
+<div class="fail-item"><div class="fail-icon">queue overflow</div><div class="fail-body"><h4>Offline queue exceeds maximum depth</h4><p>Arm 06 drops the oldest summaries first — recent data is more valuable than historical. It alerts the head with the queue depth and estimated data loss. The head may request an emergency uplink attempt or simply accept the loss depending on mission priorities.</p></div></div>
+<div class="fail-item"><div class="fail-icon">auth failure</div><div class="fail-body"><h4>Operator endpoint rejects credentials</h4><p>Arm 06 stops attempting uplink to avoid leaking data to an unexpected endpoint. It alerts the head and pauses all outbound communication until the credentials are updated via a local configuration command. Inbound directive polling also pauses.</p></div></div>
+<div class="fail-item"><div class="fail-icon">malformed directive</div><div class="fail-body"><h4>Received directive fails schema validation</h4><p>The directive is rejected and logged with the full payload for operator debugging. Arm 06 requests an acknowledgment from the server confirming the directive was received on its end, to prevent re-delivery loops. Other queued directives are processed normally.</p></div></div>
+</div></div></section>
+
+<section><div class="wrap"><p class="eyebrow reveal">Integration</p><h2 class="reveal">How it fits.</h2>
+<div class="integration-box reveal"><h4>Integration contract</h4>
+<div class="int-row"><div class="int-label">Receives from</div><div class="int-val">Head: session summaries for uplink, uplink requests, network status queries, peer announce requests.</div></div>
+<div class="int-row"><div class="int-label">Reports to</div><div class="int-val">Head: inbound directives (polled and delivered), network status, queue depth, peer discovery results.</div></div>
+<div class="int-row"><div class="int-label">External</div><div class="int-val">Operator dashboard (HTTP/2, TLS). MQTT broker for telemetry. Peer submarines via local network (MCP-over-TCP).</div></div>
+<div class="int-row"><div class="int-label">Produces</div><div class="int-val">Transmitted session summaries. Received operator directives. Peer network map. Offline queue management.</div></div>
+<div class="int-row"><div class="int-label">Network boundary</div><div class="int-val">Only arm permitted to make external network connections. All other arms are network-isolated. The head enforces this via the MCP topology.</div></div>
+</div></div></section>
+</div>
+<nav class="pagination" aria-label="Arm navigation">
+  <a href="arm-05.html" class="pag-item"><div class="pag-dir">← Previous</div><div class="pag-title">Calibration</div></a>
+  <a href="index.html" class="pag-item" style="text-align:right"><div class="pag-dir">Back to</div><div class="pag-title">All Arms</div></a>
+</nav>
+<footer role="contentinfo"><div class="fc"><a href="https://github.com/dontriskit">@dontriskit</a> <span style="margin:0 .7rem;opacity:.3">·</span> Built with <a href="https://github.com/jaredtribe">Jared</a> (OS-1)</div><div class="fc"><a href="https://github.com/dontriskit/submarine/blob/main/LICENSE">MIT</a> <span style="margin:0 .7rem;opacity:.3">·</span> <a href="https://github.com/dontriskit/submarine">GitHub</a></div></footer>
+</div>
+<script>
+const bg=document.getElementById('bg'),bgx=bg.getContext('2d');let bW,bH,bF=0,bPts=[];
+function bgResize(){bW=bg.width=window.innerWidth;bH=bg.height=window.innerHeight;bPts=Array.from({length:Math.floor(bW*bH/15000)},()=>({x:Math.random()*bW,y:Math.random()*bH,r:Math.random()*.85+.15,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.05,p:Math.random()*Math.PI*2,a:Math.random()*.1+.02}));}
+function bgRender(){bF++;bgx.clearRect(0,0,bW,bH);const g=bgx.createLinearGradient(0,0,0,bH);g.addColorStop(0,'rgba(0,6,14,.35)');g.addColorStop(1,'rgba(0,2,6,.6)');bgx.fillStyle=g;bgx.fillRect(0,0,bW,bH);const rx=bW*(.45+Math.sin(bF*.0007)*.05);const rg=bgx.createLinearGradient(rx,0,rx,bH*.5);rg.addColorStop(0,'rgba(0,100,160,.04)');rg.addColorStop(1,'rgba(0,0,0,0)');bgx.beginPath();bgx.moveTo(rx-bW*.09,0);bgx.lineTo(rx+bW*.09,0);bgx.lineTo(rx+bW*.022,bH*.5);bgx.lineTo(rx-bW*.022,bH*.5);bgx.fillStyle=rg;bgx.fill();bPts.forEach(p=>{p.x+=p.vx+Math.sin(bF*.001+p.p)*.06;p.y+=p.vy;p.p+=.009;if(p.x<0)p.x=bW;if(p.x>bW)p.x=0;if(p.y<0)p.y=bH;if(p.y>bH)p.y=0;bgx.beginPath();bgx.arc(p.x,p.y,p.r,0,Math.PI*2);bgx.fillStyle='rgba(0,170,210,'+(p.a*(.4+.6*Math.sin(p.p)))+')';bgx.fill();});requestAnimationFrame(bgRender);}
+window.addEventListener('resize',bgResize);bgResize();bgRender();
+const hc=document.getElementById('hero-canvas'),hx=hc.getContext('2d');let hF=0;
+function hResize(){hc.width=hc.offsetWidth||window.innerWidth;hc.height=hc.offsetHeight||window.innerHeight;}
+function hRender(){hF++;const W=hc.width,H=hc.height;hx.clearRect(0,0,W,H);const g=hx.createRadialGradient(W*.5,H*.25,0,W*.5,H*.6,W*.7);g.addColorStop(0,'rgba(0,18,36,.5)');g.addColorStop(.5,'rgba(0,7,16,.28)');g.addColorStop(1,'rgba(0,0,4,.82)');hx.fillStyle=g;hx.fillRect(0,0,W,H);requestAnimationFrame(hRender);}
+new ResizeObserver(hResize).observe(hc);hResize();hRender();
+anime({targets:'#loader-word',color:['rgba(240,244,248,0.07)','rgba(240,244,248,0.6)','rgba(240,244,248,0.07)'],duration:1600,easing:'easeInOutQuad',complete:()=>anime({targets:'#loader',opacity:0,duration:600,easing:'easeOutQuad',complete:()=>{document.getElementById('loader').style.display='none';anime({targets:'#main',opacity:1,duration:400,easing:'easeOutQuad'});anime({targets:'.h1-inner',translateY:['110%','0%'],duration:1700,delay:anime.stagger(170,{start:100}),easing:'easeOutExpo'});anime({targets:'.hero-meta',opacity:[0,1],translateY:[8,0],duration:1200,delay:1700,easing:'easeOutQuad'});}})});
+const obs=new IntersectionObserver((e)=>{e.forEach(en=>{if(!en.isIntersecting)return;anime({targets:en.target,opacity:[0,1],translateY:[16,0],duration:900,easing:'easeOutExpo'});obs.unobserve(en.target);});},{threshold:.07});
+document.querySelectorAll('.reveal,.block,.tool-card,.fail-item,.integration-box,.eyebrow,.lead').forEach(el=>obs.observe(el));
+</script>
+</body></html>
