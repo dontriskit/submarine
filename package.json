@@ -1,14 +1,14 @@
 {
   "name": "submarine",
   "version": "0.1.0",
-  "description": "AI-controlled autonomous submarine — ocean explorer, debris cleaner, multi-agent platform",
+  "description": "AI-controlled autonomous submarine — ocean explorer, multi-agent platform",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/jared-octopus/arms/*"
   ],
   "scripts": {
-    "landing": "cd apps/landing && npm start",
-    "dev:landing": "cd apps/landing && npm run dev"
+    "landing": "cd apps/jared-octopus/arms/landing && npm start",
+    "dev:landing": "cd apps/jared-octopus/arms/landing && npm run dev"
   },
   "license": "MIT"
 }
