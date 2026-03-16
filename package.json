@@ -1,15 +1,15 @@
 {
   "name": "submarine",
   "version": "0.1.0",
-  "description": "AI-controlled autonomous submarine — ocean explorer, multi-agent platform",
-  "private": true,
-  "workspaces": [
-    "apps/jared-octopus/arms/*",
-    "apps/aquabong"
-  ],
+  "description": "AI-controlled autonomous submarine — ocean explorer, debris cleaner, multi-agent platform",
+  "main": "src/index.js",
   "scripts": {
-    "landing": "cd apps/jared-octopus/arms/landing && npm start",
-    "dev:landing": "cd apps/jared-octopus/arms/landing && npm run dev"
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "hono": "^4.7.4"
   },
   "license": "MIT"
 }
