@@ -80,15 +80,19 @@
     #arms { }
     .arms-intro { display:grid; grid-template-columns:1fr 1fr; gap:5rem; margin-bottom:5rem; align-items:end; }
 
-    .arm-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:0; }
+    .arm-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-top:1px solid var(--line); }
     .arm-card {
       padding:2.5rem 2.5rem 2.5rem 0;
       border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line);
       opacity:0;
     }
     .arm-card:last-child { border-right:none; padding-right:0; }
     .arm-card:not(:first-child) { padding-left:2.5rem; }
-    .arm-card:nth-child(n+4) { border-top:1px solid var(--line); padding-top:2.5rem; margin-top:0; }
+    /* Remove double bottom border on last row */
+    .arm-card:nth-child(4),
+    .arm-card:nth-child(5),
+    .arm-card:nth-child(6) { border-bottom:none; }
 
     .arm-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.2rem; }
     .arm-num-badge {
@@ -100,6 +104,7 @@
 
     .arm-card h3 { margin-bottom:.5rem; }
     .arm-tagline { font-size:.8rem; font-weight:500; letter-spacing:.08em; color:var(--accent); text-transform:uppercase; margin-bottom:1rem; }
+    .arm-tagline.dim { color:var(--muted); }
     .arm-desc { font-size:.9rem; line-height:1.8; color:var(--secondary); margin-bottom:1.2rem; }
     .arm-specs { list-style:none; }
     .arm-specs li { font-size:.78rem; line-height:1.9; color:var(--muted); padding-left:1rem; position:relative; }
@@ -161,10 +166,15 @@
     /* ── RESPONSIVE ── */
     @media (max-width:960px) {
       .intro-layout, .arms-intro, .arch-layout { grid-template-columns:1fr; gap:3rem; }
-      .arm-cards { grid-template-columns:1fr 1fr; }
-      .arm-card:nth-child(2n) { border-right:none; }
-      .arm-card:nth-child(2n+1):not(:last-child) { padding-right:2.5rem; }
-      .arm-card:nth-child(n+3) { border-top:1px solid var(--line); padding-top:2.5rem; }
+      /* 2-col arm grid */
+      .arm-cards { grid-template-columns:1fr 1fr; border-top:1px solid var(--line); }
+      .arm-card { border-bottom:1px solid var(--line); }
+      .arm-card:nth-child(2n) { border-right:none; padding-right:0; }
+      .arm-card:nth-child(2n-1) { padding-right:2.5rem; }
+      /* restore bottom border on last real-last row */
+      .arm-card:nth-child(5),
+      .arm-card:nth-child(6) { border-bottom:none; }
+      .arm-card:nth-child(4) { border-bottom:1px solid var(--line); }
       .proto-grid { grid-template-columns:1fr; }
       .proto-col { border-right:none; border-bottom:1px solid var(--line); padding:2.5rem 0; }
       .proto-col:last-child { border-bottom:none; }
@@ -173,9 +183,12 @@
       .tl-item:nth-child(n+3) { border-top:1px solid var(--line); padding-top:2.5rem; }
     }
     @media (max-width:600px) {
-      .arm-cards { grid-template-columns:1fr; }
-      .arm-card { border-right:none; border-top:1px solid var(--line); padding:2rem 0; }
-      .arm-card:first-child { border-top:none; }
+      /* 1-col arm grid */
+      .arm-cards { grid-template-columns:1fr; border-top:none; }
+      .arm-card { border-right:none; border-top:1px solid var(--line); border-bottom:none; padding:2rem 0; }
+      .arm-card:nth-child(4),
+      .arm-card:nth-child(5),
+      .arm-card:nth-child(6) { border-bottom:none; }
       .tl-grid { grid-template-columns:1fr; }
       .tl-item { border-right:none; border-bottom:1px solid var(--line); padding:0 0 2rem; }
       .tl-item:last-child { border-bottom:none; }
@@ -342,6 +355,8 @@
         </div>
         <h3><a href="arm-05.html" style="color:inherit;text-decoration:none;" class="arm-link">Calibration →</a></h3>
         <div class="arm-tagline">Science needs ground truth</div>
+        <h3>Calibration</h3>
+        <div class="arm-tagline dim">Science needs ground truth</div>
         <p class="arm-desc">Runs periodic noise floor measurements, gain curve sweeps, and baseline drift corrections. Injects known reference signals to validate the signal path end-to-end. Publishes calibration deltas that arm-02 applies before each observation session.</p>
         <ul class="arm-specs">
           <li>Noise source injection via RF switch</li>
@@ -359,6 +374,8 @@
         </div>
         <h3><a href="arm-06.html" style="color:inherit;text-decoration:none;" class="arm-link">Comms & Uplink →</a></h3>
         <div class="arm-tagline">The submarine surfaces</div>
+        <h3>Comms & Uplink</h3>
+        <div class="arm-tagline dim">The submarine surfaces</div>
         <p class="arm-desc">Packages observation summaries and anomaly reports for uplink. Receives new mission directives from external operators or other submarine nodes. Acts as the network boundary — everything inbound and outbound flows through here. Supports peer-to-peer between submarine units.</p>
         <ul class="arm-specs">
           <li>HTTP/2 uplink to operator dashboard</li>
