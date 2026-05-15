@@ -1,0 +1,27 @@
+ref,description,part_number,lcsc,qty_per_board,qty_5_boards_plus_2_spares,unit_eur_indicative,subtotal_eur,notes
+U1,FPGA dev module (ECP5 25K),Sipeed Tang Primer 25K,—,1,7,25.00,175,Source from Sipeed/AliExpress; verify Tang Nano 9K is insufficient (it is for 16 LVDS lanes)
+U2,MCU module STM32H743,WeAct STM32H743VIT6 Mini,—,1,7,20.00,140,Or bare SMT H743VIT6 — module saves time for v1
+U3-U4,ADC 8-ch 14-bit 65MSPS,Analog Devices AD9249BCPZ-65,C70459,2,14,28.00,392,Verify stock; fallback 4× TI ADC3424 (~€20 each)
+U5,Ethernet PHY RMII,Microchip LAN8720AI-CP,C42816,1,7,2.30,16,
+U6,Ethernet magnetics,Bothhand HX1188NL,—,1,7,1.80,13,Single-port, no RJ45 jack — pairs go to tether connector
+U7,LVDS receiver (PPS in),TI DS90LV019TMTC,C7494,1,7,1.50,11,
+U8,Reset supervisor,Microchip MCP130T-300I/TT,C525518,1,7,0.20,2,
+Y1,TCXO 10MHz ±0.5ppm,Abracon ABLNO-10.000MHZ-T2,C107574,1,7,5.00,35,Reference clock for FPGA PLL
+J1,Board-to-board to 01-,Samtec QSH-040-01-L-D-A,—,1,7,4.00,28,Match analog board connector
+J2,Tether connector,Subconn Micro 8-pin DLSF (surplus),—,1,7,30.00,210,Or DIY epoxy gland for v1 testing
+J3,Debug header,2x5 1.27mm,—,1,7,0.50,4,Serial console + boot select
+TVS1,TVS array tether data,SP3012-06UTG,—,2,14,0.50,7,Protect Ethernet pairs
+TVS2,TVS unidirectional 58V,SMBJ58A,—,1,7,0.20,1,Power input (also on board 03, belt-and-braces)
+L1,CM choke power,Würth 744232511,—,1,7,1.20,8,Tether power CM rejection
+L2-L3,CM choke Ethernet,Bourns SRF1210A,—,2,14,0.40,6,Per Ethernet pair
+C_bulk,10uF X7R 50V 1210,—,—,4,30,0.20,6,Tether power bulk
+C_dec,various 100nF/10nF 0402,—,—,~60,500,0.01,5,Per-IC decoupling
+C_pll,various PLL/clock loop,—,—,~10,80,0.05,4,FPGA PLL loop filter
+R_term,100R 1% 0603,—,—,4,30,0.05,2,LVDS termination
+R_misc,various 1% 0402/0603,—,—,~80,600,0.01,6,Pull-ups, dividers
+PCB,4-layer 100x100mm w/ SMT passives,JLCPCB,—,1,7,35.00,245,Likely 6-layer after schematic — budget upward
+,,,,,,,,
+,,,,,,,subtotal_per_board,~180
+,,,,,,,subtotal_5_plus_2_spares,~1310
+,,,,,,,,
+,,,,,,,Notes,ADCs are ~30% of cost. Verify AD9249 stock at order; if EOL switch to ADC3424 ×4 and re-route LVDS as parallel CMOS (lower complexity if FPGA pinout cooperates).

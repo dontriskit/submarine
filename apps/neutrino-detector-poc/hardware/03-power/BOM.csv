@@ -1,0 +1,29 @@
+ref,description,part_number,lcsc,qty_per_board,qty_5_boards_plus_2_spares,unit_eur_indicative,subtotal_eur,notes
+U1,Isolated DC-DC 48V→12V 36W,Mornsun K7812-3000R3,C2873094,1,7,12.00,84,1.5kV isolation; through-hole SIP8
+U2,Buck +5V_a,TI LMR33630,C922416,1,7,1.40,10,Analog 5V rail with LC post-filter
+U3,Buck +5V_d,TI LMR33630,C922416,1,7,1.40,10,Digital 5V rail
+U4,Buck +3.3V_d,TI LMR33630,C922416,1,7,1.40,10,Digital 3.3V rail
+U5,Low-noise LDO +1.8V_a,LT3045EDD,C414908,1,7,5.50,39,From 3.3V_d to 1.8V_a (ADC supply)
+U6,Dual supervisor,Renesas/Maxim ICL7665SCSA,—,1,7,1.20,9,Watchdog reset for 3.3V_d and 1.8V_a rails
+U7,Window comparator (HV sense),TLV3702,C39603,1,7,0.50,4,Trips bias_fault if HV<25V (sense from board 01)
+TVS1,TVS unidirectional 58V,SMBJ58A,C7474,1,7,0.20,2,Tether input surge
+TVS2,TVS array dig rails,SMF05C,—,1,7,0.40,3,
+L1,CM choke tether power,Würth 744232511,—,1,7,1.20,9,
+L2-L4,Buck inductors 10µH,Bourns SRP1238A-100M,—,3,21,0.60,13,One per LMR33630
+L5-L6,LC post-filter inductors,Bourns SRP4020TA-100Y,—,2,14,0.40,6,For +5V_a and +12V_a clean rails
+C_bulk_HV,10µF 100V X7R 2220,—,—,4,30,0.40,12,Tether input bulk
+C_bulk_iso,10µF 25V X7R 1210,—,—,4,30,0.15,5,12V_iso secondary bulk
+C_buck,various 22µF X7R 16V 1210,—,—,12,90,0.10,9,POL output bulks
+C_dec,various 100nF/10nF 0402,—,—,~40,300,0.01,3,Per-IC decoupling
+C_post,100µF tantalum 16V,Kemet T491D107K016AT,—,2,14,0.30,4,LC post-filter analog rails
+R_misc,various 1% 0603,—,—,~30,220,0.01,2,Dividers, pull-ups
+J1,Board-to-board to 01-,Samtec QSH-040 (match 01-),—,1,7,4.00,28,
+J2,Board-to-board to 02-,Samtec QSH-040 (match 02-),—,1,7,4.00,28,
+J3,Tether input pigtail,Solder lugs + M3 standoff,—,2,14,0.50,7,Direct to tether connector pins 1/2
+LED1-LED5,Status LEDs (rail OK),0603 green,—,5,35,0.05,2,Bench bringup; cover with electrical tape for deploy
+PCB,4-layer 80x60mm w/ SMT passives,JLCPCB,—,1,7,25.00,175,Smaller board than 02; brick is THT
+,,,,,,,,
+,,,,,,,subtotal_per_board,~70
+,,,,,,,subtotal_5_plus_2_spares,~470
+,,,,,,,,
+,,,,,,,Notes,Cheapest of the 5 boards. Isolated brick is the dominant component; LMR33630s are commodity.

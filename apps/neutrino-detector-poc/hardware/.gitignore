@@ -1,0 +1,24 @@
+# KiCad autosaves & backups
+*-bak/
+*.bak
+*-backups/
+_autosave-*
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.000
+*.kicad_prl
+
+# Fab outputs — regenerated, don't commit unless tagged for release
+fab/*
+!fab/.gitkeep
+
+# Simulation artifacts
+*.cir
+*.net
+*.sim
+
+# 3D viewer cache
+*.wrl
+
+# Editor cruft
+.DS_Store

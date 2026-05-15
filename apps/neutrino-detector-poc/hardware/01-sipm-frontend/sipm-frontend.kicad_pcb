@@ -1,0 +1,83 @@
+(kicad_pcb (version 20221018) (generator pcbnew)
+
+  (general
+    (thickness 1.6)
+  )
+
+  (paper "A4")
+  (title_block
+    (title "01 — SiPM Analog Front-End")
+    (rev "v0.1 skeleton")
+    (company "Meridian — Neutrino Detector PoC")
+    (comment 1 "100 x 100 mm · 4-layer · 16-channel SiPM readout")
+    (comment 2 "Skeleton: outline + mounting holes only. Draw schematic in KiCad.")
+  )
+
+  (layers
+    (0 "F.Cu" signal)
+    (31 "B.Cu" signal)
+    (32 "B.Adhes" user "B.Adhesive")
+    (33 "F.Adhes" user "F.Adhesive")
+    (34 "B.Paste" user)
+    (35 "F.Paste" user)
+    (36 "B.Silkscreen" user "B.SilkS")
+    (37 "F.Silkscreen" user "F.SilkS")
+    (38 "B.Mask" user)
+    (39 "F.Mask" user)
+    (40 "Dwgs.User" user "User.Drawings")
+    (41 "Cmts.User" user "User.Comments")
+    (42 "Eco1.User" user "User.Eco1")
+    (43 "Eco2.User" user "User.Eco2")
+    (44 "Edge.Cuts" user)
+    (45 "Margin" user)
+    (46 "B.Courtyard" user)
+    (47 "F.Courtyard" user)
+    (48 "B.Fab" user)
+    (49 "F.Fab" user)
+  )
+
+  (setup
+    (pad_to_mask_clearance 0)
+  )
+
+  (net 0 "")
+
+  ;; Board outline 100 x 100 mm
+  (gr_line (start 0 0) (end 100 0) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa010001-0000-0000-0000-000000000001))
+  (gr_line (start 100 0) (end 100 100) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa010001-0000-0000-0000-000000000002))
+  (gr_line (start 100 100) (end 0 100) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa010001-0000-0000-0000-000000000003))
+  (gr_line (start 0 100) (end 0 0) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa010001-0000-0000-0000-000000000004))
+
+  ;; Mounting holes M3 (3.2 mm drill)
+  (gr_circle (center 3 3) (end 3 4.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa010001-0000-0000-0000-000000000005))
+  (gr_circle (center 97 3) (end 97 4.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa010001-0000-0000-0000-000000000006))
+  (gr_circle (center 3 97) (end 3 98.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa010001-0000-0000-0000-000000000007))
+  (gr_circle (center 97 97) (end 97 98.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa010001-0000-0000-0000-000000000008))
+
+  ;; Title silk
+  (gr_text "MERIDIAN" (at 50 43 0) (layer "F.Silkscreen") (tstamp aa010001-0000-0000-0000-00000000000a) (effects (font (size 5 5) (thickness 0.8))))
+  (gr_text "01 — SIPM FRONT-END" (at 50 52 0) (layer "F.Silkscreen") (tstamp aa010001-0000-0000-0000-00000000000b) (effects (font (size 3 3) (thickness 0.5))))
+  (gr_text "v0.1 skeleton" (at 50 58 0) (layer "F.Silkscreen") (tstamp aa010001-0000-0000-0000-00000000000c) (effects (font (size 1.6 1.6) (thickness 0.25))))
+
+  ;; Zone hints on F.Fab (will be replaced by real footprints)
+  (gr_rect (start 30 13) (end 70 38) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa010001-0000-0000-0000-000000000010))
+  (gr_text "SiPM 4x4 ARRAY" (at 50 25 0) (layer "F.Fab") (tstamp aa010001-0000-0000-0000-000000000011) (effects (font (size 1.5 1.5) (thickness 0.25))))
+
+  (gr_rect (start 5 13) (end 27 65) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa010001-0000-0000-0000-000000000012))
+  (gr_text "TIA L (8x)" (at 16 40 0) (layer "F.Fab") (tstamp aa010001-0000-0000-0000-000000000013) (effects (font (size 1.5 1.5) (thickness 0.25))))
+
+  (gr_rect (start 73 13) (end 95 65) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa010001-0000-0000-0000-000000000014))
+  (gr_text "TIA R (8x)" (at 84 40 0) (layer "F.Fab") (tstamp aa010001-0000-0000-0000-000000000015) (effects (font (size 1.5 1.5) (thickness 0.25))))
+
+  (gr_rect (start 5 68) (end 95 78) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa010001-0000-0000-0000-000000000016))
+  (gr_text "DIFF DRIVERS (16x THS4541)" (at 50 73 0) (layer "F.Fab") (tstamp aa010001-0000-0000-0000-000000000017) (effects (font (size 1.5 1.5) (thickness 0.25))))
+
+  (gr_rect (start 5 81) (end 95 92) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa010001-0000-0000-0000-000000000018))
+  (gr_text "→ MAINBOARD (QSH-040)" (at 50 86.5 0) (layer "F.Fab") (tstamp aa010001-0000-0000-0000-000000000019) (effects (font (size 1.5 1.5) (thickness 0.25))))
+
+  (gr_rect (start 5 5) (end 50 11) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa010001-0000-0000-0000-00000000001a))
+  (gr_text "HV BOOST · LT3494" (at 27.5 8 0) (layer "F.Fab") (tstamp aa010001-0000-0000-0000-00000000001b) (effects (font (size 1.5 1.5) (thickness 0.25))))
+
+  (gr_rect (start 55 5) (end 95 11) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa010001-0000-0000-0000-00000000001c))
+  (gr_text "DAC · SUP" (at 75 8 0) (layer "F.Fab") (tstamp aa010001-0000-0000-0000-00000000001d) (effects (font (size 1.5 1.5) (thickness 0.25))))
+)

@@ -1,0 +1,84 @@
+(kicad_pcb (version 20221018) (generator pcbnew)
+
+  (general
+    (thickness 1.6)
+  )
+
+  (paper "A4")
+  (title_block
+    (title "02 — DOM Digital Mainboard")
+    (rev "v0.1 skeleton")
+    (company "Meridian — Neutrino Detector PoC")
+    (comment 1 "100 x 100 mm · 4–6 layer · FPGA + MCU + ADC carrier")
+    (comment 2 "Skeleton: outline + zones only.")
+  )
+
+  (layers
+    (0 "F.Cu" signal)
+    (31 "B.Cu" signal)
+    (32 "B.Adhes" user "B.Adhesive")
+    (33 "F.Adhes" user "F.Adhesive")
+    (34 "B.Paste" user)
+    (35 "F.Paste" user)
+    (36 "B.Silkscreen" user "B.SilkS")
+    (37 "F.Silkscreen" user "F.SilkS")
+    (38 "B.Mask" user)
+    (39 "F.Mask" user)
+    (40 "Dwgs.User" user "User.Drawings")
+    (41 "Cmts.User" user "User.Comments")
+    (42 "Eco1.User" user "User.Eco1")
+    (43 "Eco2.User" user "User.Eco2")
+    (44 "Edge.Cuts" user)
+    (45 "Margin" user)
+    (46 "B.Courtyard" user)
+    (47 "F.Courtyard" user)
+    (48 "B.Fab" user)
+    (49 "F.Fab" user)
+  )
+
+  (setup (pad_to_mask_clearance 0))
+  (net 0 "")
+
+  (gr_line (start 0 0) (end 100 0) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa020001-0000-0000-0000-000000000001))
+  (gr_line (start 100 0) (end 100 100) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa020001-0000-0000-0000-000000000002))
+  (gr_line (start 100 100) (end 0 100) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa020001-0000-0000-0000-000000000003))
+  (gr_line (start 0 100) (end 0 0) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa020001-0000-0000-0000-000000000004))
+
+  (gr_circle (center 3 3) (end 3 4.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-000000000005))
+  (gr_circle (center 97 3) (end 97 4.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-000000000006))
+  (gr_circle (center 3 97) (end 3 98.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-000000000007))
+  (gr_circle (center 97 97) (end 97 98.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-000000000008))
+
+  (gr_text "MERIDIAN" (at 50 43 0) (layer "F.Silkscreen") (tstamp aa020001-0000-0000-0000-00000000000a) (effects (font (size 5 5) (thickness 0.8))))
+  (gr_text "02 — DOM MAINBOARD" (at 50 52 0) (layer "F.Silkscreen") (tstamp aa020001-0000-0000-0000-00000000000b) (effects (font (size 3 3) (thickness 0.5))))
+  (gr_text "v0.1 skeleton" (at 50 58 0) (layer "F.Silkscreen") (tstamp aa020001-0000-0000-0000-00000000000c) (effects (font (size 1.6 1.6) (thickness 0.25))))
+
+  ;; Component zones on F.Fab
+  (gr_rect (start 6 12) (end 12 88) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-000000000010))
+  (gr_text "← FRONT-END" (at 9 50 90) (layer "F.Fab") (tstamp aa020001-0000-0000-0000-000000000011) (effects (font (size 1.5 1.5) (thickness 0.25))))
+
+  (gr_rect (start 17 20) (end 28 31) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-000000000012))
+  (gr_text "AD9249 #1" (at 22.5 25 0) (layer "F.Fab") (tstamp aa020001-0000-0000-0000-000000000013) (effects (font (size 1.3 1.3) (thickness 0.2))))
+
+  (gr_rect (start 17 36) (end 28 47) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-000000000014))
+  (gr_text "AD9249 #2" (at 22.5 41 0) (layer "F.Fab") (tstamp aa020001-0000-0000-0000-000000000015) (effects (font (size 1.3 1.3) (thickness 0.2))))
+
+  (gr_rect (start 40 14) (end 82 42) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-000000000016))
+  (gr_text "Tang Primer 25K (FPGA)" (at 61 28 0) (layer "F.Fab") (tstamp aa020001-0000-0000-0000-000000000017) (effects (font (size 1.8 1.8) (thickness 0.3))))
+
+  (gr_rect (start 36 46) (end 86 68) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-000000000018))
+  (gr_text "STM32H743 module" (at 61 57 0) (layer "F.Fab") (tstamp aa020001-0000-0000-0000-000000000019) (effects (font (size 1.8 1.8) (thickness 0.3))))
+
+  (gr_rect (start 85 18) (end 91 22) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-00000000001a))
+  (gr_text "TCXO 10 MHz" (at 88 16 0) (layer "F.Fab") (tstamp aa020001-0000-0000-0000-00000000001b) (effects (font (size 1.2 1.2) (thickness 0.2))))
+
+  (gr_rect (start 38 72) (end 47 78) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-00000000001c))
+  (gr_text "LAN8720" (at 42.5 75 0) (layer "F.Fab") (tstamp aa020001-0000-0000-0000-00000000001d) (effects (font (size 1.2 1.2) (thickness 0.2))))
+
+  (gr_rect (start 50 72) (end 59 78) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-00000000001e))
+  (gr_text "magnetics" (at 54.5 75 0) (layer "F.Fab") (tstamp aa020001-0000-0000-0000-00000000001f) (effects (font (size 1.2 1.2) (thickness 0.2))))
+
+  (gr_rect (start 80 65) (end 94 85) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa020001-0000-0000-0000-000000000020))
+  (gr_text "Subconn 8" (at 87 73 0) (layer "F.Fab") (tstamp aa020001-0000-0000-0000-000000000021) (effects (font (size 1.4 1.4) (thickness 0.2))))
+  (gr_text "→ TETHER" (at 87 79 0) (layer "F.Fab") (tstamp aa020001-0000-0000-0000-000000000022) (effects (font (size 1.2 1.2) (thickness 0.2))))
+)

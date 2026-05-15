@@ -1,0 +1,43 @@
+ref,description,part_number,lcsc,qty_per_board,qty_2_boards_incl_spare,unit_eur_indicative,subtotal_eur,notes
+U1,GPS module 1PPS,uBlox NEO-M9N,—,1,2,30.00,60,Bare module on socket; external active antenna via SMA
+U2,LVCMOS→LVDS driver,TI SN65LVDS1,—,1,2,1.20,2,
+U3,1:5 LVDS fan-out clock buffer,ON NB3N551DG,C7384,1,2,2.50,5,< 50 ps output skew
+U4-U8,48V eFuse 250mA,TI TPS25940,C475006,5,10,3.20,32,One per tether output
+U9,12→48V boost,TI LM5160AQDNTRQ1,C435999,1,2,4.50,9,1.5A out at 48V
+U10,12→5V buck,TI LMR33630ADDAR,C922416,1,2,1.40,3,For Pi/switch power
+U11,12→3.3V buck,TI TPS62933FRPAR,C2825434,1,2,1.20,2,For GPS + buffers
+U12,MPPT charger,TI BQ24650RVAR,—,1,2,3.50,7,12V LiFePO4 charge controller
+U13,I2C GPIO expander,Microchip MCP23017,C7395,1,2,1.00,2,Reads 5 eFuse fault flags, status LEDs, Pi reads via I2C
+TVS1-5,TVS unidirectional 58V,SMBJ58A,C7474,5,10,0.20,2,One per tether output
+TVS6-15,TVS array Ethernet,SP3012-06UTG,—,10,20,0.50,10,One per Eth pair × 5 tethers
+L1-L5,CM choke tether power,Würth 744232511,—,5,10,1.20,12,One per tether output
+L6-L10,CM choke Ethernet,Bourns SRF1210A,—,10,20,0.40,8,Per Eth pair
+L11,Buck inductor 22µH (boost),Bourns SRP1265A-220M,—,1,2,0.80,2,
+L12-L13,Buck inductors 10µH,Bourns SRP1238A-100M,—,2,4,0.60,2,
+J1-J5,Tether bulkhead Subconn,Subconn Micro 8-pin (surplus),—,5,10,30.00,300,Same as DOM side
+J6,Battery input lugs,M5 stud + ring terminal,—,2,4,1.50,6,To 12V LiFePO4
+J7,GPS antenna SMA bulkhead,Amphenol 132225,—,1,2,3.00,6,Lid-mounted
+J8,Pi5 power + I2C breakout,Pin header 2×10,—,1,2,1.00,2,5V power + I2C bus to Pi
+J9-J13,RJ45 to switch (or direct pairs),Bel Stewart SS-7188S-A-NF,—,5,10,1.20,12,Per tether, to external GbE switch
+C_bulk_HV,22µF 100V tantalum,—,—,2,4,1.20,5,Boost output bulk
+C_bulk_bat,470µF 25V aluminum,—,—,2,4,0.80,3,Battery input bulk
+C_misc,various ceramics,—,—,~80,300,0.02,6,
+R_misc,various 1% 0603,—,—,~60,200,0.01,2,
+PCB,4-layer 100x80mm w/ SMT passives,JLCPCB,—,1,2,30.00,60,
+,,,,,,,,
+,,,,,,,subtotal_per_board,~270
+,,,,,,,subtotal_2_boards,~550
+,,,,,,,,
+External (NOT on PCB),,,,,,,,
+,Pi 5 8GB + NVMe HAT + 500GB SSD,Raspberry Pi 5,—,1,1,180.00,180,Buy ready-built
+,GbE 5-port switch,TP-Link TL-SG105,—,1,1,15.00,15,Off-the-shelf
+,LTE USB modem,Quectel EC25 or Huawei E3372,—,1,1,80.00,80,
+,12V 100Ah LiFePO4 battery,various (Eco-Worthy / EcoFlow / OLX),—,1,1,250.00,250,Heaviest single line item
+,Pelican-style case 1450,Peli or knock-off,—,1,1,80.00,80,
+,GPS active antenna + 5m coax,—,—,1,1,15.00,15,
+,LTE antennas 2× SMA,—,—,2,2,8.00,16,Diversity
+,Internal patch cables + standoffs,—,—,—,—,—,15,Bag of bits
+,External subtotal,,,,,,~650,
+,,,,,,,,
+,**Grand total (board + external, 1 set)**,,,,,,**~900**,
+,**Grand total (2 sets incl. 1 spare PCB)**,,,,,,**~1200**,

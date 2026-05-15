@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neutrino Detector PoC — KiCad Viewer</title>
+<style>
+  :root {
+    --cream: #F2EBDB;
+    --cream-warm: #ECE3CC;
+    --cream-deep: #E0D5B8;
+    --ink: #1A1E2B;
+    --oxblood: #862B3A;
+    --gold: #9E8A56;
+    --gold-soft: #B8A472;
+    --gold-pale: #D4C490;
+    --hairline: rgba(26, 30, 43, 0.15);
+    --hairline-strong: rgba(26, 30, 43, 0.35);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--cream); color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px; line-height: 1.55;
+  }
+  body { max-width: 1100px; margin: 0 auto; padding: 56px 32px 96px; }
+
+  .masthead {
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--hairline);
+    padding: 24px 0 32px; margin-bottom: 48px; text-align: center;
+  }
+  .kicker { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--oxblood); margin: 0 0 18px; }
+  .masthead h1 { font-size: 46px; font-weight: normal; font-style: italic; margin: 0 0 14px; }
+  .dateline { font-size: 13px; font-style: italic; color: var(--gold); margin: 0; letter-spacing: 0.05em; }
+
+  .note {
+    background: var(--cream-warm);
+    border-left: 3px solid var(--oxblood);
+    padding: 16px 20px; margin: 0 0 48px; font-size: 14px;
+  }
+  .note strong { color: var(--oxblood); }
+  .note code {
+    background: var(--cream-deep); padding: 1px 6px; border-radius: 2px;
+    font-family: "SF Mono", Consolas, "Liberation Mono", monospace; font-size: 12.5px;
+  }
+  .note pre {
+    margin: 10px 0 0; font-family: "SF Mono", Consolas, "Liberation Mono", monospace;
+    font-size: 12px; padding: 8px 12px; background: var(--cream-deep); overflow-x: auto;
+  }
+
+  .board {
+    margin-bottom: 56px;
+    border-top: 1px solid var(--hairline-strong);
+    padding-top: 32px;
+  }
+  .board header {
+    display: flex; align-items: baseline; gap: 24px;
+    margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .board .num {
+    font-size: 13px; letter-spacing: 0.35em; color: var(--oxblood);
+    text-transform: uppercase; margin: 0; font-style: italic; flex-shrink: 0;
+  }
+  .board h2 {
+    font-size: 28px; font-weight: normal; font-style: italic;
+    margin: 0; flex-grow: 1;
+  }
+  .board .dims {
+    font-size: 12px; color: var(--gold); font-style: italic;
+    margin: 0; flex-shrink: 0; letter-spacing: 0.05em;
+  }
+  .board .file {
+    font-size: 11px; color: var(--gold); font-style: italic;
+    margin: 0; flex-basis: 100%;
+    font-family: "SF Mono", Consolas, "Liberation Mono", monospace;
+  }
+
+  .pcb-frame {
+    background: var(--ink);
+    border: 1px solid var(--hairline-strong);
+    padding: 24px;
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .pcb-frame::before {
+    content: ""; position: absolute; top: 8px; right: 8px;
+    width: 28px; height: 28px;
+    border-top: 1px solid var(--gold-soft);
+    border-right: 1px solid var(--gold-soft);
+  }
+  .pcb-frame::after {
+    content: ""; position: absolute; bottom: 8px; left: 8px;
+    width: 28px; height: 28px;
+    border-bottom: 1px solid var(--gold-soft);
+    border-left: 1px solid var(--gold-soft);
+  }
+  .pcb-render { width: 100%; }
+  .pcb-render svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+  .pcb-loading {
+    color: var(--gold); font-style: italic; padding: 80px 0; text-align: center;
+  }
+  .pcb-error {
+    color: var(--oxblood); font-style: italic; padding: 60px 20px; text-align: center;
+    font-family: "SF Mono", Consolas, monospace; font-size: 13px;
+  }
+
+  .dropzone {
+    margin-top: 8px;
+    padding: 10px 14px;
+    background: var(--cream-warm);
+    border: 1px dashed var(--gold-soft);
+    font-size: 12px; color: var(--gold); font-style: italic;
+    text-align: center;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .dropzone.drag-over {
+    background: var(--gold-pale);
+    border-color: var(--oxblood);
+    color: var(--ink);
+  }
+
+  footer {
+    margin-top: 80px; border-top: 2px solid var(--ink); padding-top: 18px;
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); text-align: center;
+  }
+  footer .small {
+    font-style: italic; text-transform: none; letter-spacing: 0.03em;
+    color: var(--ink); opacity: 0.7; margin-top: 10px; font-size: 12px;
+  }
+  footer a { color: var(--oxblood); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <p class="kicker">Meridian · Neutrino Detector PoC</p>
+  <h1>KiCad Viewer</h1>
+  <p class="dateline">Live PCB renders · v0.1 skeletons</p>
+</header>
+
+<div class="note">
+  <strong>Serving locally.</strong> Renders <code>.kicad_pcb</code> files from each board directory directly in the browser via a small S-expression parser. To launch:
+  <pre>cd apps/neutrino-detector-poc/hardware
+python3 -m http.server 8765</pre>
+  Then open <code>http://localhost:8765/viewer.html</code>. When Adam saves a real schematic over the skeleton, this view updates on refresh. Drag-and-drop a <code>.kicad_pcb</code> onto any board for a transient preview.
+</div>
+
+<article class="board">
+  <header>
+    <p class="num">№ I</p>
+    <h2>SiPM Analog Front-End</h2>
+    <p class="dims">100 × 100 mm · 4-layer</p>
+    <p class="file">01-sipm-frontend/sipm-frontend.kicad_pcb</p>
+  </header>
+  <div class="pcb-frame">
+    <div class="pcb-render" data-src="01-sipm-frontend/sipm-frontend.kicad_pcb">
+      <div class="pcb-loading">loading skeleton…</div>
+    </div>
+  </div>
+  <div class="dropzone" data-target="01-sipm-frontend/sipm-frontend.kicad_pcb">
+    drop <code>.kicad_pcb</code> here for a transient preview
+  </div>
+</article>
+
+<article class="board">
+  <header>
+    <p class="num">№ II</p>
+    <h2>DOM Digital Mainboard</h2>
+    <p class="dims">100 × 100 mm · 4–6 layer</p>
+    <p class="file">02-mainboard/mainboard.kicad_pcb</p>
+  </header>
+  <div class="pcb-frame">
+    <div class="pcb-render" data-src="02-mainboard/mainboard.kicad_pcb">
+      <div class="pcb-loading">loading skeleton…</div>
+    </div>
+  </div>
+  <div class="dropzone" data-target="02-mainboard/mainboard.kicad_pcb">
+    drop <code>.kicad_pcb</code> here
+  </div>
+</article>
+
+<article class="board">
+  <header>
+    <p class="num">№ III</p>
+    <h2>Power Conditioning</h2>
+    <p class="dims">80 × 60 mm · 4-layer</p>
+    <p class="file">03-power/power.kicad_pcb</p>
+  </header>
+  <div class="pcb-frame">
+    <div class="pcb-render" data-src="03-power/power.kicad_pcb">
+      <div class="pcb-loading">loading skeleton…</div>
+    </div>
+  </div>
+  <div class="dropzone" data-target="03-power/power.kicad_pcb">
+    drop <code>.kicad_pcb</code> here
+  </div>
+</article>
+
+<article class="board">
+  <header>
+    <p class="num">№ IV</p>
+    <h2>Surface Aggregator</h2>
+    <p class="dims">100 × 80 mm · 4-layer</p>
+    <p class="file">04-surface-aggregator/surface-aggregator.kicad_pcb</p>
+  </header>
+  <div class="pcb-frame">
+    <div class="pcb-render" data-src="04-surface-aggregator/surface-aggregator.kicad_pcb">
+      <div class="pcb-loading">loading skeleton…</div>
+    </div>
+  </div>
+  <div class="dropzone" data-target="04-surface-aggregator/surface-aggregator.kicad_pcb">
+    drop <code>.kicad_pcb</code> here
+  </div>
+</article>
+
+<article class="board">
+  <header>
+    <p class="num">№ V</p>
+    <h2>LED Calibration Pulser</h2>
+    <p class="dims">50 × 30 mm · 2-layer</p>
+    <p class="file">05-led-pulser/led-pulser.kicad_pcb</p>
+  </header>
+  <div class="pcb-frame">
+    <div class="pcb-render" data-src="05-led-pulser/led-pulser.kicad_pcb">
+      <div class="pcb-loading">loading skeleton…</div>
+    </div>
+  </div>
+  <div class="dropzone" data-target="05-led-pulser/led-pulser.kicad_pcb">
+    drop <code>.kicad_pcb</code> here
+  </div>
+</article>
+
+<footer>
+  Meridian · Neutrino Detector PoC · Viewer v0.2
+  <div class="small">
+    Custom S-expression parser · gr_line / gr_circle / gr_rect / gr_text on Edge.Cuts, F.Silkscreen, F.Fab.<br>
+    Concept renders (magazine layout): <a href="gallery.html">gallery.html</a>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   Minimal S-expression parser for KiCad .kicad_pcb files
+   Returns nested arrays: ['kicad_pcb', ['version', 20221018], ...]
+   ============================================================ */
+function parseSexpr(text) {
+  let i = 0;
+  function skipWS() {
+    while (i < text.length) {
+      const c = text[i];
+      if (c === ' ' || c === '\t' || c === '\n' || c === '\r') { i++; }
+      else if (c === ';') { while (i < text.length && text[i] !== '\n') i++; }
+      else break;
+    }
+  }
+  function readAtom() {
+    if (text[i] === '"') {
+      i++;
+      let s = '';
+      while (i < text.length && text[i] !== '"') {
+        if (text[i] === '\\' && i + 1 < text.length) {
+          i++;
+          s += text[i];
+        } else {
+          s += text[i];
+        }
+        i++;
+      }
+      i++; // closing "
+      return s;
+    }
+    let s = '';
+    while (i < text.length && text[i] !== ' ' && text[i] !== '\t' && text[i] !== '\n' && text[i] !== '\r' && text[i] !== '(' && text[i] !== ')') {
+      s += text[i];
+      i++;
+    }
+    const n = parseFloat(s);
+    return !isNaN(n) && /^-?(\d|\.)/.test(s) ? n : s;
+  }
+  function readList() {
+    i++; // skip (
+    const list = [];
+    while (true) {
+      skipWS();
+      if (i >= text.length || text[i] === ')') { i++; break; }
+      if (text[i] === '(') list.push(readList());
+      else list.push(readAtom());
+    }
+    return list;
+  }
+  skipWS();
+  if (text[i] !== '(') return null;
+  return readList();
+}
+
+function find(node, tag) {
+  if (!Array.isArray(node)) return null;
+  for (const c of node) if (Array.isArray(c) && c[0] === tag) return c;
+  return null;
+}
+function findAll(node, tag) {
+  if (!Array.isArray(node)) return [];
+  return node.filter(c => Array.isArray(c) && c[0] === tag);
+}
+function vals(node, tag) {
+  const f = find(node, tag);
+  return f ? f.slice(1) : [];
+}
+function firstVal(node, tag) {
+  return vals(node, tag)[0];
+}
+
+/* ============================================================
+   Layer style — color + stroke multiplier (mm baseline)
+   ============================================================ */
+const LAYERS = {
+  'Edge.Cuts':    { color: '#F2EBDB', strokeMul: 2.0, opacity: 1.0, fontWeight: 600 },
+  'F.Silkscreen': { color: '#F2EBDB', strokeMul: 1.5, opacity: 0.95, fontWeight: 400 },
+  'F.SilkS':      { color: '#F2EBDB', strokeMul: 1.5, opacity: 0.95, fontWeight: 400 },
+  'B.Silkscreen': { color: '#E0D5B8', strokeMul: 1.0, opacity: 0.5,  fontWeight: 400 },
+  'B.SilkS':      { color: '#E0D5B8', strokeMul: 1.0, opacity: 0.5,  fontWeight: 400 },
+  'F.Fab':        { color: '#9E8A56', strokeMul: 1.0, opacity: 0.7,  fontWeight: 400 },
+  'B.Fab':        { color: '#9E8A56', strokeMul: 0.6, opacity: 0.4,  fontWeight: 400 },
+  'F.Cu':         { color: '#862B3A', strokeMul: 1.0, opacity: 0.7,  fontWeight: 400 },
+  'B.Cu':         { color: '#5E1F2A', strokeMul: 1.0, opacity: 0.5,  fontWeight: 400 },
+  'F.Courtyard':  { color: '#7A6B45', strokeMul: 0.5, opacity: 0.35, fontWeight: 400 },
+  'B.Courtyard':  { color: '#7A6B45', strokeMul: 0.5, opacity: 0.35, fontWeight: 400 },
+};
+const DEFAULT_STYLE = { color: '#888', strokeMul: 0.5, opacity: 0.4, fontWeight: 400 };
+
+function widthOf(node) {
+  const stroke = find(node, 'stroke');
+  if (stroke) {
+    const w = firstVal(stroke, 'width');
+    if (typeof w === 'number') return w;
+  }
+  const w = firstVal(node, 'width');
+  return typeof w === 'number' ? w : 0.15;
+}
+function fillOf(node) {
+  const f = firstVal(node, 'fill');
+  return f === 'solid' || f === 'yes';
+}
+
+/* ============================================================
+   Render an AST to SVG fragment + bbox
+   ============================================================ */
+function renderPCB(ast) {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const update = (x, y) => {
+    minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+  };
+  const parts = [];
+
+  // Process top-level graphical elements
+  for (const child of ast) {
+    if (!Array.isArray(child)) continue;
+    const tag = child[0];
+    const layer = firstVal(child, 'layer');
+    const style = LAYERS[layer] || DEFAULT_STYLE;
+    const sw = widthOf(child) * style.strokeMul;
+
+    if (tag === 'gr_line') {
+      const s = find(child, 'start'), e = find(child, 'end');
+      if (!s || !e) continue;
+      const x1 = s[1], y1 = s[2], x2 = e[1], y2 = e[2];
+      update(x1, y1); update(x2, y2);
+      parts.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${style.color}" stroke-width="${sw}" stroke-linecap="round" opacity="${style.opacity}"/>`);
+    }
+    else if (tag === 'gr_circle') {
+      const c = find(child, 'center'), e = find(child, 'end');
+      if (!c || !e) continue;
+      const cx = c[1], cy = c[2];
+      const r = Math.hypot(e[1] - cx, e[2] - cy);
+      update(cx - r, cy - r); update(cx + r, cy + r);
+      const filled = fillOf(child);
+      parts.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${filled ? style.color : 'none'}" stroke="${style.color}" stroke-width="${sw}" opacity="${style.opacity}"/>`);
+    }
+    else if (tag === 'gr_rect') {
+      const s = find(child, 'start'), e = find(child, 'end');
+      if (!s || !e) continue;
+      const x = Math.min(s[1], e[1]), y = Math.min(s[2], e[2]);
+      const w = Math.abs(e[1] - s[1]), h = Math.abs(e[2] - s[2]);
+      update(x, y); update(x + w, y + h);
+      parts.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="${style.color}" stroke-width="${sw}" opacity="${style.opacity}"/>`);
+    }
+    else if (tag === 'gr_text') {
+      const text = child[1];
+      const at = find(child, 'at');
+      if (!at) continue;
+      const x = at[1], y = at[2], angle = at[3] || 0;
+      const effects = find(child, 'effects');
+      const font = effects ? find(effects, 'font') : null;
+      const sz = font ? find(font, 'size') : null;
+      const size = sz ? sz[1] : 1.5;
+      update(x - 5, y - 2); update(x + 5, y + 2);
+      const transform = angle ? ` transform="rotate(${-angle} ${x} ${y})"` : '';
+      const escaped = String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      parts.push(`<text x="${x}" y="${y}" fill="${style.color}" font-family="Georgia, serif" font-size="${size}" font-weight="${style.fontWeight}" text-anchor="middle" dominant-baseline="central" opacity="${style.opacity}"${transform}>${escaped}</text>`);
+    }
+  }
+
+  if (!isFinite(minX)) { minX = 0; minY = 0; maxX = 100; maxY = 100; }
+  return { parts, bbox: { minX, minY, maxX, maxY } };
+}
+
+/* ============================================================
+   Title block extraction (for the SVG header overlay)
+   ============================================================ */
+function extractTitle(ast) {
+  const tb = find(ast, 'title_block');
+  if (!tb) return null;
+  return {
+    title: firstVal(tb, 'title') || '',
+    rev: firstVal(tb, 'rev') || '',
+    company: firstVal(tb, 'company') || '',
+  };
+}
+
+/* ============================================================
+   Render to a container element
+   ============================================================ */
+async function renderInto(container, text) {
+  try {
+    const ast = parseSexpr(text);
+    if (!ast || ast[0] !== 'kicad_pcb') throw new Error('not a kicad_pcb file');
+    const { parts, bbox } = renderPCB(ast);
+    const title = extractTitle(ast);
+
+    const pad = 6;
+    const vbX = bbox.minX - pad;
+    const vbY = bbox.minY - pad;
+    const vbW = bbox.maxX - bbox.minX + 2 * pad;
+    const vbH = bbox.maxY - bbox.minY + 2 * pad;
+
+    // PCB body — slightly lighter than page bg, with subtle hatching
+    const bodyParts = [
+      `<defs>
+        <pattern id="hatch" patternUnits="userSpaceOnUse" width="2" height="2" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="2" stroke="#252938" stroke-width="0.3"/>
+        </pattern>
+      </defs>`,
+      `<rect x="${bbox.minX}" y="${bbox.minY}" width="${bbox.maxX - bbox.minX}" height="${bbox.maxY - bbox.minY}" fill="#1F2433"/>`,
+      `<rect x="${bbox.minX}" y="${bbox.minY}" width="${bbox.maxX - bbox.minX}" height="${bbox.maxY - bbox.minY}" fill="url(#hatch)"/>`,
+    ];
+
+    const svg = `<svg viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:600px; height:auto;">
+      ${bodyParts.join('')}
+      ${parts.join('\n')}
+    </svg>`;
+
+    container.innerHTML = svg;
+  } catch (err) {
+    container.innerHTML = `<div class="pcb-error">${err.message}</div>`;
+  }
+}
+
+async function renderBoard(container) {
+  const url = container.dataset.src;
+  try {
+    const res = await fetch(url, { cache: 'no-cache' });
+    if (!res.ok) throw new Error(`HTTP ${res.status} — ${url}`);
+    const text = await res.text();
+    await renderInto(container, text);
+  } catch (err) {
+    container.innerHTML = `<div class="pcb-error">${err.message}</div>`;
+  }
+}
+
+/* ============================================================
+   Init
+   ============================================================ */
+document.querySelectorAll('.pcb-render').forEach(renderBoard);
+
+document.querySelectorAll('.dropzone').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.name.endsWith('.kicad_pcb')) {
+      zone.innerHTML = '— only <code>.kicad_pcb</code> files accepted —';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const article = zone.closest('article');
+      const render = article.querySelector('.pcb-render');
+      renderInto(render, ev.target.result);
+      zone.innerHTML = `✓ previewing <code>${file.name}</code> · save to <code>${zone.dataset.target}</code> to persist`;
+    };
+    reader.readAsText(file);
+  });
+});
+</script>
+
+</body>
+</html>

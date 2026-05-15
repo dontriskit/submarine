@@ -1,0 +1,79 @@
+(kicad_pcb (version 20221018) (generator pcbnew)
+
+  (general (thickness 1.6))
+  (paper "A4")
+  (title_block
+    (title "03 — DOM Power Conditioning")
+    (rev "v0.1 skeleton")
+    (company "Meridian — Neutrino Detector PoC")
+    (comment 1 "80 x 60 mm · 4-layer · 48V → 12V iso brick + POL bucks")
+  )
+
+  (layers
+    (0 "F.Cu" signal)
+    (31 "B.Cu" signal)
+    (32 "B.Adhes" user "B.Adhesive")
+    (33 "F.Adhes" user "F.Adhesive")
+    (34 "B.Paste" user)
+    (35 "F.Paste" user)
+    (36 "B.Silkscreen" user "B.SilkS")
+    (37 "F.Silkscreen" user "F.SilkS")
+    (38 "B.Mask" user)
+    (39 "F.Mask" user)
+    (40 "Dwgs.User" user "User.Drawings")
+    (41 "Cmts.User" user "User.Comments")
+    (42 "Eco1.User" user "User.Eco1")
+    (43 "Eco2.User" user "User.Eco2")
+    (44 "Edge.Cuts" user)
+    (45 "Margin" user)
+    (46 "B.Courtyard" user)
+    (47 "F.Courtyard" user)
+    (48 "B.Fab" user)
+    (49 "F.Fab" user)
+  )
+
+  (setup (pad_to_mask_clearance 0))
+  (net 0 "")
+
+  (gr_line (start 0 0) (end 80 0) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa030001-0000-0000-0000-000000000001))
+  (gr_line (start 80 0) (end 80 60) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa030001-0000-0000-0000-000000000002))
+  (gr_line (start 80 60) (end 0 60) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa030001-0000-0000-0000-000000000003))
+  (gr_line (start 0 60) (end 0 0) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (tstamp aa030001-0000-0000-0000-000000000004))
+
+  (gr_circle (center 3 3) (end 3 4.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-000000000005))
+  (gr_circle (center 77 3) (end 77 4.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-000000000006))
+  (gr_circle (center 3 57) (end 3 58.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-000000000007))
+  (gr_circle (center 77 57) (end 77 58.6) (layer "Edge.Cuts") (stroke (width 0.15) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-000000000008))
+
+  (gr_text "MERIDIAN · 03 POWER" (at 40 49 0) (layer "F.Silkscreen") (tstamp aa030001-0000-0000-0000-00000000000a) (effects (font (size 3 3) (thickness 0.5))))
+  (gr_text "v0.1 skeleton" (at 40 54 0) (layer "F.Silkscreen") (tstamp aa030001-0000-0000-0000-00000000000c) (effects (font (size 1.4 1.4) (thickness 0.2))))
+
+  ;; Iso brick (dominant)
+  (gr_rect (start 27 14) (end 49 46) (layer "F.Fab") (stroke (width 0.15) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-000000000010))
+  (gr_text "K7812-3000R3" (at 38 25 0) (layer "F.Fab") (tstamp aa030001-0000-0000-0000-000000000011) (effects (font (size 1.6 1.6) (thickness 0.25))))
+  (gr_text "48 → 12 V iso" (at 38 30 0) (layer "F.Fab") (tstamp aa030001-0000-0000-0000-000000000012) (effects (font (size 1.2 1.2) (thickness 0.2))))
+
+  ;; Tether input
+  (gr_rect (start 6 22) (end 12 38) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-000000000013))
+  (gr_text "+48V" (at 9 30 0) (layer "F.Fab") (tstamp aa030001-0000-0000-0000-000000000014) (effects (font (size 1.2 1.2) (thickness 0.2))))
+
+  ;; POL bucks column
+  (gr_rect (start 52 8) (end 64 15) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-000000000015))
+  (gr_text "+5V_a" (at 58 12 0) (layer "F.Fab") (tstamp aa030001-0000-0000-0000-000000000016) (effects (font (size 1.2 1.2) (thickness 0.2))))
+
+  (gr_rect (start 52 17) (end 64 24) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-000000000017))
+  (gr_text "+5V_d" (at 58 21 0) (layer "F.Fab") (tstamp aa030001-0000-0000-0000-000000000018) (effects (font (size 1.2 1.2) (thickness 0.2))))
+
+  (gr_rect (start 52 26) (end 64 33) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-000000000019))
+  (gr_text "+3.3V_d" (at 58 30 0) (layer "F.Fab") (tstamp aa030001-0000-0000-0000-00000000001a) (effects (font (size 1.2 1.2) (thickness 0.2))))
+
+  (gr_rect (start 52 35) (end 64 42) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-00000000001b))
+  (gr_text "+1.8V_a LDO" (at 58 39 0) (layer "F.Fab") (tstamp aa030001-0000-0000-0000-00000000001c) (effects (font (size 1.1 1.1) (thickness 0.15))))
+
+  ;; Output connectors
+  (gr_rect (start 66 8) (end 76 28) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-00000000001d))
+  (gr_text "→ 01" (at 71 18 0) (layer "F.Fab") (tstamp aa030001-0000-0000-0000-00000000001e) (effects (font (size 1.4 1.4) (thickness 0.2))))
+
+  (gr_rect (start 66 30) (end 76 50) (layer "F.Fab") (stroke (width 0.1) (type default)) (fill none) (tstamp aa030001-0000-0000-0000-00000000001f))
+  (gr_text "→ 02" (at 71 40 0) (layer "F.Fab") (tstamp aa030001-0000-0000-0000-000000000020) (effects (font (size 1.4 1.4) (thickness 0.2))))
+)

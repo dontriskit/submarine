@@ -1,0 +1,25 @@
+ref,description,part_number,lcsc,qty_per_board,qty_5_boards_plus_2_spares,unit_eur_indicative,subtotal_eur,notes
+D1-D16,SiPM 3x3mm 35um pitch,Onsemi MicroFJ-30035-TR,C2978125,16,112,12.00,1344,bulk LCSC; verify pricing at order. Single biggest line item.
+U1-U16,Wideband op-amp,TI LMH6629MTX,C509498,16,112,2.50,280,TIA / non-inverting amp gain=20
+U17-U32,Fully-diff amp,TI THS4541IDGK,C148717,16,112,3.80,426,Single-to-diff converter to ADC
+U33,HV boost converter,Linear LT3494EDDB,C13345,1,7,7.50,53,+12V → +30V SiPM bias
+U34,DAC 4-ch 12-bit I2C,Microchip MCP4728-E/UN,C108207,1,7,2.20,15,HV bias trim
+J1,Board-to-board 40-pin,Samtec QSH-040-01-L-D-A,—,1,7,4.00,28,High-speed connector to mainboard. Alt: cheap 2x20 0.05" header for v1
+TVS1,TVS diode 36V,SMBJ36A,C7474,1,7,0.10,1,HV input protection
+L1-L4,Ferrite bead 470Ω@100MHz,Murata BLM18EG471SN1,C72077,~16,120,0.05,6,HV filter + per-rail
+C_HV,100nF X7R 50V 0805,—,—,32,250,0.03,8,Per-channel HV decouple ×2
+C_HV2,10nF X7R 50V 0603,—,—,16,120,0.02,3,Per-channel HV decouple
+C_amp,100nF X7R 16V 0402,—,—,~64,500,0.01,5,Amp decoupling
+C_bulk,10uF X7R 35V 1210,—,—,4,30,0.20,6,HV filter bulk
+C_ac,100nF X7R 16V 0603,—,—,16,120,0.02,3,AC-couple SiPM → amp
+R_fb,1k 0.1% thin-film 0603,Yageo RT0603BRD071K,C25741,16,120,0.10,12,TIA feedback
+R_gain,52.3R 0.1% 0603,—,—,16,120,0.10,12,TIA gain set
+R_term,50R 1% 0603,—,—,16,120,0.05,6,SiPM termination
+R_series_HV,1k 1% 0805,—,—,16,120,0.05,6,Per-channel HV series
+R_misc,various 1% 0402/0603,—,—,~100,800,0.01,8,Bias / pull-up / damping
+PCB,4-layer 100x100mm w/ SMT passives,JLCPCB,—,1,7,30.00,210,Includes SMT assembly of 0402/0603/0805 only; hand-place SiPMs + ICs
+,,,,,,,,
+,,,,,,,subtotal_per_board,~340
+,,,,,,,subtotal_5_plus_2_spares,~2432
+,,,,,,,,
+,,,,,,,Notes,SiPMs dominate cost (~55%). If budget is tight, MicroFJ-10035 (1x1mm) drops SiPM cost by ~3x but loses ~9x active area.

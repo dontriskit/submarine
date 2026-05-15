@@ -1,0 +1,25 @@
+ref,description,part_number,lcsc,qty_per_board,qty_2_boards,unit_eur_indicative,subtotal_eur,notes
+U1,FPGA dev module + USB-C,Sipeed Tang Nano 9K,—,1,2,10.00,20,Trigger generation + USB-serial control
+U2,GaN gate driver,TI LMG1020YFFR,C918237,1,2,3.50,7,Sub-2ns rise time
+U3,LVDS receiver / level shift,Analog Devices AD8611,C8001,1,2,3.00,6,Optional — for receiving sync from DOM
+LED1,Royal blue 450nm LED,Cree XPEBRY-L1-0000-00N01 (or OSRAM LB W5SM),—,1,2,2.50,5,Buy one of each on first order
+J1,USB-C connector,—,—,1,2,0.30,1,On Tang Nano module already; this is for the carrier
+J2,Trigger out LVDS pair pigtail,2-pin 1.27mm + twisted pair,—,1,2,1.00,2,To DOM under test
+J3,LED + optics breakout,5-pin header,—,1,2,0.50,1,
+R_series,5R 1% 1206 (LED current limit),—,—,2,4,0.10,1,Parallel pair for current sharing
+R_misc,various 1% 0603,—,—,~15,40,0.01,1,
+C_dec,100nF/10nF X7R 0402,—,—,~20,80,0.01,1,
+C_bulk,10µF 16V X7R 1210,—,—,2,4,0.15,1,
+PCB,2-layer 50x30mm,JLCPCB,—,1,2,5.00,10,Small + cheap
+,,,,,,,,
+,,,,,,,subtotal_per_board,~25
+,,,,,,,subtotal_2_boards,~55
+,,,,,,,,
+Optics (NOT on PCB),,,,,,,,
+,Ground-glass diffuser DG10-1500,Thorlabs,—,1,1,30.00,30,Or DIY: sanded acrylic
+,3-position ND filter set,Edmund Optics + 3D-printed wheel,—,1,1,50.00,50,Or DIY using printer film + cardboard wheel
+,Black acrylic light-tight tube,—,—,1,1,5.00,5,
+,In-water housing (DIY PVC + window),—,—,1,1,30.00,30,Optional v2
+,Optics subtotal,,,,,,~115,
+,,,,,,,,
+,**Grand total (board + optics, 1 set)**,,,,,,**~140**,
